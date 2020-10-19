@@ -1,0 +1,58 @@
+
+<image-viewer>
+    <div>
+        <div class="scroller">
+            <img src="{getImage()}">
+        </div>
+    </div>
+    <style>
+        .scroller {
+            height: 300px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            width: 80%;
+            margin-left: 10%;
+            border: 2px solid black;
+            overflow-y: scroll;
+        }
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+          state: {},
+          bound: {},
+          onBeforeMount(props, state) {
+            cm = newCommon(this)
+          },    
+          onMounted(props, state) {
+            console.log(this.root.tagName, 'onMounted', props, state)
+            cm.bindComponent()
+          },
+          onBeforeUpdate(props, state) {              
+          },
+          onUpdated(props, state) {              
+          },
+          onBeforeUnmount(props, state) {              
+          },
+          onUnmounted(props, state) {              
+          },
+          getImage() {
+            const passedCmd = cm.getApp().model.getAtPath('passedCmd')
+            const imgFile = passedCmd.cmdargs[0].file
+
+            // we apply width and height directly to the element
+            const img = this.$('img')
+            if(img) {
+              if(passedCmd.options.width) {
+                img.style.width = passedCmd.options.width + 'px'
+              }
+              if(passedCmd.options.height) {
+                img.style.width = passedCmd.options.height + 'px'
+              }
+            }
+            return imgFile // return the src attribute
+          }
+        }   
+    </script>
+</image-viewer>    

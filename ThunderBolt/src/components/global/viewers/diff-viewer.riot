@@ -1,0 +1,125 @@
+
+<diff-viewer>
+    <div class="scroller">
+        <flex-layout orientation="horizontal" justify="space-around">
+            <ol class="panel"/>
+            <ul class="divider"/>
+            <ol class="panel"/>
+        </flex-layout>
+    </div>
+    <style>
+        .scroller {
+            padding: 5%;
+            height: 200px;
+            overflow-y: scroll;
+        }
+        .divider {
+            width: 20px;
+            padding: 0px;
+            white-space: nowrap;
+            overflow-x: scroll;
+        }
+        .panel {
+            white-space: nowrap;
+            width: 45%;
+            padding: 4px;
+            overflow-x: scroll;
+        }
+        .ins {
+            background-color: lightgreen;
+        }
+        .del {
+            background-color: lightcoral;
+            text-decoration: line-through;
+        }
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        import * as simpleTextDiff from 'simple-text-diff'
+        const {diffPatch, diffPatchBySeparator} = simpleTextDiff.default;
+        let cm;
+        function diffDetail(left, right, panel1, panel2, divider) {
+          const llines = left.split('\n')
+          const rlines = right.split('\n')
+          // alignTextLines(llines, rlines)
+          let i = 0;
+          let before = ''
+          let after = ''
+          while(i < llines.length || i < rlines.length) {
+            let port = llines[i] || ''
+            port.trim();
+            let starboard = rlines[i] || ''
+            starboard.trim()
+            const result = diffPatch(port, starboard,'.')
+            const isLineDifferent = (result.before !== result.after)
+            let li = document.createElement('li')
+            li.innerHTML = insdel(result.before)
+            panel1.appendChild(li)
+            li = document.createElement('li')
+            li.innerHTML = insdel(result.after)
+            panel2.appendChild(li)
+            li = document.createElement('li')
+            li.innerText = isLineDifferent ? '->' : ''
+            divider.appendChild(li)
+
+            i++
+          }
+        }
+        function alignTextLines(llines, rlines) {
+          for(let i=0; i<llines.length; i++) {
+            const left = llines[i]
+            const n = rlines.indexOf(left)
+            if(n !== -1) {
+              let d = n - i;
+              let top = rlines.slice(0, i)
+              let btm = rlines.slice(n)
+              while(d--) {
+                top.push('')
+              }
+              rlines = top.concat(btm)
+            }
+          }
+        }
+        function syncScroll(panel1, panel2, divider) {
+          const onscroll = e => {
+            panel1.scrollTop = panel2.scrollTop = divider.scrollTop = e.srcElement.scrollTop
+            panel1.scrollLeft = panel2.scrollLeft = e.srcElement.scrollLeft;
+            divider.scrollLeft = 0;
+          }
+          panel1.onscroll = panel2.onscroll = divider.onscroll = onscroll;
+        }
+
+        function insdel(text) {
+          text = text.replace(/<ins>/g,'<span class="ins">').replace(/<\/ins>/,'</span>')
+          text = text.replace(/<del>/g,'<span class="del">').replace(/<\/del>/,'</span>')
+          return text;
+        }
+        export default {
+          state: {},
+          bound: {},
+          onBeforeMount(props, state) {
+            cm = newCommon(this)
+          },    
+          onMounted(props, state) {
+            console.log(this.root.tagName, 'onMounted', props, state)
+            cm.bindComponent()
+            // must do when mounted to get the panel references
+            const passedCmd = cm.getApp().model.getAtPath('passedCmd');
+            const leftSide = (passedCmd && passedCmd.cmdargs && passedCmd.cmdargs[0] && passedCmd.cmdargs[0].text) || ''
+            const rightSide = (passedCmd && passedCmd.cmdargs && passedCmd.cmdargs[1] && passedCmd.cmdargs[1].text) || ''
+            const panels = this.$$('.panel')
+            const divider = this.$('.divider')
+            diffDetail(leftSide, rightSide, panels[0], panels[1], divider)
+            syncScroll(panels[0], panels[1], divider)
+          },
+          onBeforeUpdate(props, state) {              
+          },
+          onUpdated(props, state) {              
+          },
+          onBeforeUnmount(props, state) {              
+          },
+          onUnmounted(props, state) {              
+          }
+        }   
+    </script>
+</diff-viewer>    

@@ -1,0 +1,11 @@
+{
+  "files": {
+    "included": [
+      "build/**/*.js"
+    ],
+    "excluded": [
+      "node_modules/",
+      "ThunderBolt/**/*"
+    ]
+  }
+}

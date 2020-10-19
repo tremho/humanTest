@@ -1,0 +1,55 @@
+
+$normal-font:    Helvetica, sans-serif;
+$primary-color: #333;
+
+/**
+Use font auwesome
+ */
+$fa-font-path:        "../webfonts";
+@import "fa-scss/fontawesome";
+@import "fa-scss/solid";
+
+/**
+Apply defaults
+ */
+body {
+  font: 100% $normal-font;
+  color: $primary-color;
+  cursor: auto;
+}
+
+// enable to force non-disappearing scrollers on mac.  Not sure we want it. also has other format ramifications.
+//::-webkit-scrollbar {
+//  -webkit-appearance: none;
+//  width: 7px;
+//}
+//
+//::-webkit-scrollbar-thumb {
+//  border-radius: 4px;
+//  background-color: rgba(0, 0, 0, .5);
+//  box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+//}
+
+/**
+Define a label as bold
+ */
+%label {
+  font-weight: bold;
+}
+/**
+apply label definition to both Label tag and label class
+ */
+label {
+  @extend %label;
+}
+.label {
+  @extend %label;
+}
+/**
+Define an offset for values that follow a label in a span.
+ */
+.value {
+  display: inline-block;
+  margin-left: 10px;
+}
+

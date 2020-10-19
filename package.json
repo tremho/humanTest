@@ -1,0 +1,32 @@
+{
+  "name": "humantest",
+  "version": "0.0.0",
+  "description": "Test Harness and GUI app for manual asset verification",
+  "main": "build/ExchangeFlow.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -fr ./build && cd ThunderBolt; npm run clean",
+    "start": "rm -fr ./build; tsc && node ./build/main.js",
+    "build": "npm run clean && tsc && cd ThunderBolt; npm run build",
+    "dev-start": "here=`pwd`; npm run build && cd ThunderBolt/electronMain; npm run package && cd $here; npm run start",
+    "dev-build": "here=`pwd`; npm run build && cd ThunderBolt/electronMain; npm run package && cd $here; inchjs",
+    "gen-npm": "npm run dev-build && tsccd ./build && npm run x-gen-npm",
+    "x-gen-npm": "cd npm && rm ht-app index.js; ln -s ../ThunderBolt/electronMain/release-builds ht-app && ln -s ../build/ExchangeFlow.js index.js && documentation readme index.js --section=API"
+  },
+  "keywords": [
+    "Manual",
+    "Testing",
+    "Asset",
+    "Human"
+  ],
+  "author": "tremho",
+  "license": "ISC",
+  "devDependencies": {
+    "inchjs": "^0.4.1",
+    "ts-clear-classdoc": "file:../ts-clear-classdoc",
+    "typescript": "^4.0.3"
+  },
+  "dependencies": {
+    "@types/node": "^14.11.8"
+  }
+}

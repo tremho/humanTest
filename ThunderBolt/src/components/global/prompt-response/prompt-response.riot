@@ -1,0 +1,96 @@
+
+<prompt-response>
+    <div bind="passedCmd.options.prompt,passedCmd.cmd,info.secondsLeft">
+        <div if="{bound.cmd !== 'verifyHuman'}">
+            <p class="prompt">{bound.prompt}</p>
+            <flex-layout class="button-bar" width="25%" orientation="horizontal" justify="space-between" align="center">
+                <button class="pass" onclick="{pass}">Pass</button>
+                <button class="fail" onclick="{fail}">Fail</button>
+                <button class= "skip" onclick="{skip}">Skip</button>
+                <span class="timer">{bound.secondsLeft}</span>
+            </flex-layout>
+            <textarea cols="80" rows="8" placeholder="Enter any optional comments or observations here, then press the button above to judge this test"/>
+        </div>
+        <div if="{bound.cmd === 'verifyHuman'}">
+            <h3>Are you available and willing to answer some manual test questions?</h3>
+            <p class="timer">Respond within {bound.secondsLeft} seconds</p>
+            <button class="pass" onclick="{pass}">Okay, Sure!</button>
+            <fill-space width="35px"/>
+            <button class= "skip" onclick="{skip}">Not This time, thanks</button>
+        </div>
+    </div>
+    <style>
+        .timer {
+            color: orange;
+        }
+        .button-bar {
+            height: 20px;
+            background-color: black;
+            color: yellow;
+        }
+        .button-bar {
+            background-color: #d4ebf2;
+            height: 30px;
+        }
+        .pass {
+            background-color: green;
+            color: white;
+        }
+        .fail {
+            background-color: red;
+            color: white;
+        }
+        .skip {
+            background-color: #d4ebf2;
+            color: black;
+        }
+
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+          state: {
+            results: {}
+          },
+          bound: {},
+          onBeforeMount(props, state) {
+            console.log(this.root.tagName, 'onBeforeMount')
+            cm = newCommon(this)
+          },
+          onMounted(props, state) {
+            console.log(this.root.tagName, 'onMounted', props, state)
+            cm.bindComponent()
+          },
+          onBeforeUpdate(props, state) {
+          },
+          onUpdated(props, state) {
+          },
+          onBeforeUnmount(props, state) {
+          },
+          onUnmounted(props, state) {
+          },
+          resultsDone() {
+            const ta = this.$('textarea')
+            this.state.results.comment = ta && ta.value;
+            cm.getApp().testResults(this.state.results)
+
+          },
+          pass() {
+            this.state.results.passed = true;
+            this.resultsDone()
+          },
+          fail() {
+            this.state.results.passed = false;
+            this.resultsDone()
+          },
+          skip() {
+            this.state.results.skipped = true;
+            this.resultsDone()
+          }
+
+
+
+    }
+    </script>
+</prompt-response>    

@@ -1,0 +1,121 @@
+
+<drop-down>
+    <div>
+        <input onkeydown="{handleKey}" onclick="{openPopup}" oninput="{refilter}" type="text" width="100px" placeholder="{props.hint ||'select from list'}"/>
+        <span class="dropBtn" onclick="{openPopup}"><i class="fa fa-caret-down fa-lg"/></span>
+        <popup-list
+                items="{props.items}"
+                width={state.width}
+                open="{state.open}"
+                onclose={onPopupClose.bind(this)}
+                focus-item="{state.focusItem}"
+                filter="{state.filter}"
+                onchosen="{onChosen.bind(this)}"
+        />
+    </div>
+    <style>
+        li {
+            list-style: none;
+        }
+        .popup {
+            background: white;
+            border: 1px solid black;
+            position: absolute;
+        }
+        .dropBtn {
+            border: 1px solid black;
+            background: lightgray;
+        }
+
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+            state: {},
+            bound: {},
+            onBeforeMount(props, state) {
+              cm = newCommon(this)
+            },    
+            onMounted(props, state) {
+              console.log(this.root.tagName, 'onMounted', props, state)
+              cm.bindComponent()
+            },
+            onBeforeUpdate(props, state) {
+              console.log(this.root.tagName, 'onBeforeUpdate', props, state)
+              let w = this.$('input').offsetWidth
+              w += this.$('span').offsetWidth
+              state.width = w;
+            },
+            onUpdated(props, state) {              
+            },
+            onBeforeUnmount(props, state) {              
+            },
+            onUnmounted(props, state) {              
+            },
+            onPopupClose(e) {
+              console.log('onPopupClose', this, e)
+              this.$('input').focus()
+            },
+            refilter(e) {
+              console.log('refilter', e.target.value)
+              const comp = cm.getComponent(e.srcElement)
+              comp.update({
+                open: true,
+                filter: e.target.value || ''
+              })
+            },
+            openPopup(e) {
+              console.log('opening')
+              const comp = cm.getComponent(e.srcElement)
+              comp.update({
+                open: true
+              })
+              this.$('input').focus()
+            },
+            closePopup(e) {
+              const comp = cm.getComponent(e.srcElement)
+              comp.update({
+                open: false
+              })
+            },
+            onChosen(e) {
+              console.log('onChosen', e)
+              this.$('input').value = e.detail.label
+              this.update({
+                open: false
+              })
+            },
+            onSelect(e) {
+              const comp = cm.getComponent(e.srcElement)
+              const label = e.srcElement.innerText
+              const p = e.srcElement.parentElement
+              let index
+              for (let i=0; i<p.children.length; i++) {
+                if(p.children[i] === e.srcElement) {
+                  index = i;
+                  break;
+                }
+              }
+              console.log('selected index '+index+', '+label)
+              this.$('input').value = label
+              comp.update({
+                open: false
+              })
+            },
+            handleKey(e) {
+              const comp = cm.getComponent(e.srcElement)
+              if(e.keyCode === 13) {
+                comp.closePopup(e)
+              }
+              if(e.keyCode === 40) {
+                comp.update({
+                  focusItem: 0
+                })
+              } else {
+                e.srcElement.focus()
+              }
+            }
+    }
+    </script>
+</drop-down>    

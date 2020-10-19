@@ -1,0 +1,33 @@
+
+<date-display>
+    <div style="display:inline">
+        {state.dtStr}
+    </div>
+    <style>
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm
+        export default {
+            state: {},
+            bound: {},
+            onBeforeMount(props, state) {
+              console.log('onBeforeMount', props, state)
+              cm = newCommon(this)
+              state.dtStr = cm.formatDate(props.date, props.format)
+              console.log('formatted date as '+ state.dtStr)
+            },
+            onMounted(props, state) {
+              cm.bindComponent()
+            },
+            onBeforeUpdate(props, state) {
+            },
+            onUpdated(props, state) {
+            },
+            onBeforeUnmount(props, state) {
+            },
+            onUnmounted(props, state) {
+            }
+    }
+    </script>
+</date-display>    

@@ -1,0 +1,86 @@
+
+<image-compare>
+    <div>
+        <flex-layout if="{state.mode === 'split'}" orientation="horizontal" justify="space-between" align="center">
+            <div class="panel"><img src="{state.img1}" height="200px"/></div>
+            <div class="panel"><img src="{state.img2}" height="200px"/></div>
+        </flex-layout>
+        <div class="blinkbox" if="{state.mode === 'blink'}">
+            <img class="blinker" src="{state.img1}" style="visibility:{state.vis1};"/>
+            <img class="blinker" src="{state.img2}" style="visibility:{state.vis2};"/>
+        </div>
+        <button onclick="{switchView}">{state.otherView}</button>
+        <fill-space width="25px"/>
+        <button if="{state.mode === 'blink'}" onclick="{toggleVisible}">Blink</button>
+    </div>
+    <style>
+        .blinkbox {
+            width: 200px;
+            height: 200px;
+            overflow: scroll
+        }
+        .blinker {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+        }
+        .panel {
+            white-space: nowrap;
+            width: 45%;
+            height: 200px;
+            padding: 4px;
+            overflow: scroll;
+        }
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+          state: {},
+          bound: {},
+          onBeforeMount(props, state) {
+            cm = newCommon(this)
+            console.log(this.root.tagName, 'onBeforeMount', props, state)
+            const passedCmd = cm.getApp().model.getAtPath('passedCmd')
+            state.img1 = passedCmd.cmdargs[0].file
+            state.img2 = passedCmd.cmdargs[1].file
+            state.mode = 'split'
+            state.otherView = 'Blink Mode'
+            state.vis1 = 'visible'
+            state.vis2 = 'hidden'
+          },
+          onMounted(props, state) {
+            console.log(this.root.tagName, 'onMounted', props, state)
+            cm.bindComponent()
+          },
+          onBeforeUpdate(props, state) {              
+          },
+          onUpdated(props, state) {              
+          },
+          onBeforeUnmount(props, state) {              
+          },
+          onUnmounted(props, state) {              
+          },
+          switchView(e) {
+            if(this.state.mode === 'split') {
+              this.state.mode = 'blink'
+              this.state.otherView = 'Split Mode'
+            } else {
+              this.state.mode = 'split'
+              this.state.otherView = 'Blink Mode'
+            }
+            this.update()
+          },
+          toggleVisible(e) {
+            if(this.state.vis1 === 'visible') {
+              this.state.vis1 = 'hidden'
+              this.state.vis2 = 'visible'
+            } else {
+              this.state.vis1 = 'visible'
+              this.state.vis2 = 'hidden'
+            }
+            this.update()
+          }
+        }
+    </script>
+</image-compare>    

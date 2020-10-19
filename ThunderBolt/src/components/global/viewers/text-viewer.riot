@@ -1,0 +1,49 @@
+
+<text-viewer>
+    <div>
+        <div class="scroller">
+        {getText()}
+        </div>
+    </div>
+    <style>
+        .scroller {
+            height: 300px;
+            font-size: 15px;
+            white-space: pre-wrap;
+            width: 80%;
+            margin-left: 10%;
+            border: 2px solid black;
+            overflow-y: scroll;
+        }
+
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+          state: {},
+          bound: {},
+          onBeforeMount(props, state) {
+            console.log(this.root.tagName, 'onBeforeMount')
+            cm = newCommon(this)
+          },
+          onMounted(props, state) {
+            console.log(this.root.tagName, 'onMounted', props, state)
+            cm.bindComponent()
+          },
+          onBeforeUpdate(props, state) {
+          },
+          onUpdated(props, state) {
+          },
+          onBeforeUnmount(props, state) {
+          },
+          onUnmounted(props, state) {
+          },
+          getText() {
+            const passedCmd = cm.getApp().model.getAtPath('passedCmd')
+            const text = passedCmd.cmdargs[0].text
+            return text
+          }
+    }
+    </script>
+</text-viewer>    

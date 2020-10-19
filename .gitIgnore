@@ -1,0 +1,16 @@
+.idea/
+.DS_Store
+npm/ht-app
+npm/index.js
+npm/example/
+node_modules/
+build/
+ThunderBolt/build/
+ThunderBolt/css/
+ThunderBolt/dist/
+ThunderBolt/electronMain/build/
+ThunderBolt/electronMain/release-builds/
+ThunderBolt/node_modules/
+ThunderBolt/electronMain/node_modules/
+webfonts
+scss/fa-scss

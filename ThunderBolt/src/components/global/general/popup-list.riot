@@ -1,0 +1,170 @@
+
+<popup-list>
+    <div>
+        <div class="popup" style="visibility: {state.open ? 'visible' : 'hidden'}; width: {props.width}px;">
+            <li each="{item in getItems()}"  tabindex="-1" onkeydown="{handleKey}" onclick="{onSelect}">{item}</li>
+        </div>
+    </div>
+    <style>
+        li {
+            list-style: none;
+        }
+        li:focus {
+            background: lightcyan;
+            outline: none;
+        }
+        .popup {
+            background: white;
+            border: 1px solid black;
+            position: absolute;
+        }
+
+    </style>
+    <script>
+      import {newCommon} from '../../Common';
+      let cm;
+      export default {
+        state: {
+          open: true
+        },
+        bound: {},
+        onBeforeMount(props, state) {
+          cm = newCommon(this)
+          state.filter = props.filter
+        },
+        onMounted(props, state) {
+          // console.log(this.root.tagName, 'onMounted', props, state)
+          cm.bindComponent()
+        },
+        onBeforeUpdate(props, state) {
+          console.log(this.root.tagName, 'onBeforeUpdate', props, state)
+          state.filter = props.filter
+          if(!state.done) state.open = props.open;
+          if(typeof props.focusItem === 'number') {
+            let lis = this.$$('li')
+            let fi = lis[props.focusItem]
+            if(fi) {
+              fi.focus()
+            }
+          }
+        },
+        onUpdated(props, state) {
+          console.log(this.root.tagName, 'onUpdated', props, state)
+          state.done = false
+        },
+        onBeforeUnmount(props, state) {
+        },
+        onUnmounted(props, state) {
+        },
+        getItems() {
+          console.log('getItems)')
+          const props = this.props;
+          let items = []
+          let filtered = []
+          if(Array.isArray(props.items)) {
+            items =  props.items
+          }
+          if(typeof props.items === 'string') {
+            items = props.items.split(',')
+          }
+          let mat = this.state.filter
+          console.log('filtering on ', mat)
+          items.forEach(it => {
+            if(!mat || it.indexOf(mat) !== -1) {
+              filtered.push(it)
+            }
+          })
+          return filtered;
+        },
+        refilter(e) {
+          const comp = cm.getComponent(e.srcElement)
+          comp.update({
+            open: true
+          })
+        },
+        openPopup(e) {
+          const comp = cm.getComponent(e.srcElement)
+          comp.update({
+            open: true
+          })
+        },
+        closePopup(e) {
+          const comp = cm.getComponent(e.srcElement)
+          comp.update({
+            open: false
+          })
+          if(comp.props.onclose) {
+            comp.props.onclose(e)
+          }
+        },
+        getChildIndex(el) {
+          const p = el.parentElement
+          let index = -1
+          for (let i = 0; i < p.children.length; i++) {
+            if (p.children[i] === el) {
+              index = i;
+              break;
+            }
+          }
+          return index;
+        },
+        selectElement(el) {
+          const comp = cm.getComponent(el)
+          const label = el.innerText
+          let index = this.getChildIndex(el)
+          let selectedElement = el.parentElement.children[index]
+          if(selectedElement) {
+            selectedElement.focus()
+            this.state.selectedElement = selectedElement
+
+            // don't update here.  we've done a hot-DOM CSS change only so nothing needs to be re-rendered.
+            // If we do anyway, we'll reset to props.focusItem, which we don't want
+            // comp.update()
+          }
+        },
+        onSelect(e) {
+            this.selectElement(e.srcElement)
+            this.pickedChosen(e)
+        },
+
+        pickedChosen(e) {
+          const props = this.props;
+          const selectedElement = this.state.selectedElement;
+          if(props.onchosen) {
+            const evt = new CustomEvent('chosen', {
+              detail: {
+                srcElement: selectedElement,
+                index: this.getChildIndex(selectedElement),
+                label: selectedElement.innerText
+              }
+            })
+            props.onchosen(evt)
+          }
+          this.closePopup(e)
+        },
+        handleKey(e) {
+          console.log('keydown', e.keyCode, e.srcElement)
+          let selNext;
+          if(e.keyCode === 38) { // up
+            selNext = e.srcElement.previousSibling
+            if(!selNext) {
+              this.state.done = true
+              this.closePopup(e)
+            }
+          }
+          if(e.keyCode === 40) { // down
+            selNext = e.srcElement.nextSibling
+          }
+          if(e.keyCode === 13) { // enter
+            this.selectElement(e.srcElement)
+            this.pickedChosen(e)
+          }
+          if(selNext) {
+            console.log(selNext)
+            this.selectElement(selNext)
+          }
+        }
+      }
+
+    </script>
+</popup-list>    

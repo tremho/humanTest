@@ -1,0 +1,107 @@
+
+<split-panel>
+    <div>
+        <slot/>
+    </div>
+    <style>
+        /* divider styles are in global scss definition */
+    </style>
+    <script>
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+            state: {},
+            bound: {},
+            onBeforeMount(props, state) {
+              cm = newCommon(this)
+              console.log('onBeforeMount', props, state);
+            },
+            onMounted(props, state) {
+              console.log('onMounted', props, state);
+                cm.bindComponent()
+                const div = this.$('DIV')
+                div.style.display = 'flex';
+                div.style.width = '100%'
+                div.style.height = '100%'
+                if(props.orientation === 'vertical') {
+                  div.style.flexFlow = 'column nowrap'
+                } else {
+                  div.style.flexFlow = 'row nowrap'
+                }
+                div.style.justifyContent = 'stretch'
+                cm.setCommonProps(div, props)
+
+                div.style.alignItems = 'stretch'
+
+                const children = div.children;
+                let size = 0;
+                let count = children.length;
+                let lastDivider = count;
+                if(props.endDivider === 'false') {
+                    lastDivider--
+                }
+                while(count--) {
+                  const ref = children[count]
+                  if(count < lastDivider) {
+                    const divider = document.createElement('div')
+                    divider.className = "divider-" + props.orientation
+                    divider.onmousedown = (e) => {
+                      this.state.isDown = true;
+                      this.state.refPoint = props.orientation === 'vertical' ? e.screenY : e.screenX;
+                      e.preventDefault()
+                      return false;
+                    }
+                    divider.onmouseup = (e) => {
+                      this.state.isDown = false;
+                    }
+                    divider.onmousemove = (e) => {
+                      if (this.state.isDown) {
+                        const travel = props.orientation === 'vertical' ? e.screenY - this.state.refPoint : e.screenX - this.state.refPoint
+                        const prev = e.srcElement.previousSibling;
+                        const next = e.srcElement.nextSibling;
+
+                        if (props.orientation === 'vertical') {
+                          prev.style.height = (prev.offsetHeight + travel) + 'px'
+                          if (next) next.style.height = (next.offsetHeight - travel) + 'px'
+                        } else {
+                          prev.style.width = (prev.offsetWidth + travel) + 'px'
+                          if (next) next.style.width = (next.offsetWidth - travel) + 'px'
+                        }
+                        this.state.refPoint += travel;
+                      }
+                    }
+                    // divider.ondrag = divider.onmousemove
+                    // divider.ondragend = (e) => {
+                    //   this.state.isDown = false;
+                    // }
+
+                    ref.parentNode.insertBefore(divider, ref.nextSibling)
+                  }
+                  ref.onmousemove = ref.onmouseup = (e) => {
+                    setTimeout(() => {this.state.isDown = false; }, 250)
+                  }
+                  ref.style.overflow = 'scroll'
+                  if(props.orientation === 'vertical') {
+                    ref.style.width = '100%'
+                    ref.style.height = ref.offsetHeight + 'px'
+                  } else {
+                    ref.style.width = ref.offsetWidth + 'px';
+                    ref.style.height = '100%'
+                  }
+
+                  ref.style.cursor = 'auto'
+                  size += props.orientation==='vertical' ? ref.offsetHeight : ref.offsetWidth;
+                }
+                this.state.refSize = size;
+            },
+            onBeforeUpdate(props, state) {
+            },
+            onUpdated(props, state) {              
+            },
+            onBeforeUnmount(props, state) {              
+            },
+            onUnmounted(props, state) {              
+            }
+    }
+    </script>
+</split-panel>    

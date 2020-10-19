@@ -1,0 +1,35 @@
+
+<date-picker>
+    <div style="display:inline-block">
+        <input type="text" placeholder="Select Date..">
+    </div>
+    <style>
+    </style>
+    <script>
+        import datepicker from 'js-datepicker'
+        import {newCommon} from '../../Common';
+        let cm;
+        export default {
+            state: {},
+            bound: {},
+            onBeforeMount(props, state) {
+              cm = newCommon(this)
+            },    
+            onMounted(props, state) {
+              console.log(this.root.tagName, 'onMounted', props, state)
+              cm.bindComponent()
+            },
+            onBeforeUpdate(props, state) {
+              const input = this.$('input')
+              const options = {}
+              if(!state.picker) state.picker = datepicker(input, options)
+            },
+            onUpdated(props, state) {              
+            },
+            onBeforeUnmount(props, state) {              
+            },
+            onUnmounted(props, state) {              
+            }
+    }
+    </script>
+</date-picker>    
