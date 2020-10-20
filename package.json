@@ -1,6 +1,6 @@
 {
   "name": "humantest",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Test Harness and GUI app for manual asset verification",
   "main": "build/ExchangeFlow.js",
   "scripts": {
@@ -20,10 +20,11 @@
     "Human"
   ],
   "author": "tremho",
+  "repository": "https://github.com/tremho/humanTest",
   "license": "ISC",
   "devDependencies": {
     "inchjs": "^0.4.1",
-    "ts-clear-classdoc": "file:../ts-clear-classdoc",
+    "ts-clear-classdoc": "^1.0.1",
     "typescript": "^4.0.3"
   },
   "dependencies": {
