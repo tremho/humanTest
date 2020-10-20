@@ -1,4 +1,6 @@
 
+npm install -g electron-packager
+
 # make Mac
 electron-packager . --overwrite --platform=darwin --arch=x64 --extraResource=../index.html --extraResource=../css --extraResource=../dist --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds
 

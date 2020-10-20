@@ -10,14 +10,14 @@
     "package": "rm -fr ./build && tsc && ./make-releases.sh",
     "dev-start": "npm run package && npm run start"
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/tremho/humanTest",
   "keywords": [
     "Electron",
-    "Projectus",
+    "HumanTest",
     "main",
     "process"
   ],
-  "author": "steve@ohmert.com (Steven Ohmert)",
+  "author": "tremho",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^14.6.2",

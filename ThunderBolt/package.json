@@ -16,7 +16,8 @@
     "profile": "webpack --profile --mode production"
   },
   "keywords": [],
-  "author": "",
+  "author": "tremho",
+  "repository": "https://github.com/tremho/humanTest",
   "license": "ISC",
   "dependencies": {
     "@keyframes/core": "^2.0.10",
