@@ -4,7 +4,7 @@
   "description": "Test Harness and GUI app for manual asset verification",
   "main": "build/ExchangeFlow.js",
   "scripts": {
-    "test": "npm run gen-npm && cd npm && npm test",
+    "test": "npm run gen-npm && cd npm && npm i && npm test",
     "clean": "rm -fr ./build && cd ThunderBolt; npm run clean",
     "start": "rm -fr ./build; tsc && node ./build/main.js",
     "build": "npm run clean && tsc && cd ThunderBolt; npm run build",
@@ -24,7 +24,6 @@
   "license": "ISC",
   "devDependencies": {
     "inchjs": "^0.4.1",
-    "tap": "^14.10.8",
     "ts-clear-classdoc": "^1.0.1",
     "typescript": "^4.0.3"
   },
