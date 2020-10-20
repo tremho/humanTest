@@ -82,13 +82,13 @@ the assumptions that went into product design.
 
 ### Installation
 
-npm install --save-dev humanTest
+npm install --save-dev human-test
 
 ### Usage
 Use within the module of your test code.
 
 ```
-var humanTest = require('humanTest')
+var humanTest = require('human-test')
 
 humanTest.startManualTests('Title to Display')
 humanTest.verifyHumanAvailable().then(result => {
