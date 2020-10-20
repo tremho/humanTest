@@ -11,7 +11,7 @@
     "dev-start": "here=`pwd`; npm run build && cd ThunderBolt/electronMain; npm run package && cd $here; npm run start",
     "dev-build": "here=`pwd`; npm run build && cd ThunderBolt/electronMain; npm run package && cd $here; inchjs",
     "gen-npm": "npm run dev-build && tsccd ./build && npm run x-gen-npm",
-    "x-gen-npm": "cd npm && rm ht-app index.js; ln -s ../ThunderBolt/electronMain/release-builds ht-app && ln -s ../build/ExchangeFlow.js index.js && documentation readme index.js --section=API"
+    "x-gen-npm": "cd npm && rm example ht-app index.js; ln -s ../ThunderBolt/electronMain/release-builds ht-app && ln -s ../build/ExchangeFlow.js index.js && ln -s ../example example && npm i && documentation readme index.js --section=API"
   },
   "keywords": [
     "Manual",
