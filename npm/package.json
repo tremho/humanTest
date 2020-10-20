@@ -4,7 +4,7 @@
   "description": "Support for human-aided testing tasks in test frameworks",
   "main": "index.js",
   "scripts": {
-    "test": "tap Tap.test.js"
+    "test": "tap --no-timeout Tap.test.js"
   },
   "keywords": [
     "human",
