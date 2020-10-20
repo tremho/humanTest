@@ -4,7 +4,7 @@
   "description": "Test Harness and GUI app for manual asset verification",
   "main": "build/ExchangeFlow.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cd npm; npm test",
     "clean": "rm -fr ./build && cd ThunderBolt; npm run clean",
     "start": "rm -fr ./build; tsc && node ./build/main.js",
     "build": "npm run clean && tsc && cd ThunderBolt; npm run build",
