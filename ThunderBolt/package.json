@@ -8,7 +8,7 @@
     "test": "nyc --require esm --require jsdom-global/register --require ./test/register-riot-extension.js mocha src/**/*.spec.js",
     "cov": "nyc report --reporter=text-lcov | coveralls",
     "cov-html": "nyc report --reporter=html",
-    "clean": "rm -fr build css; cd electronMain; npm run clean",
+    "clean": "npm i && rm -fr build css; cd electronMain; npm run clean",
     "build": "tsc; sass src/scss:css; webpack -c --mode production",
     "prepublishOnly": "npm test",
     "start": "tsc && sass src/scss:css && webpack -c --mode development && cd electronMain && npm run start",

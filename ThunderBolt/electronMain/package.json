@@ -6,7 +6,7 @@
   "main": "build/main.js",
   "scripts": {
     "start": "rm -fr ./build; tsc && electron .",
-    "clean": "rm -fr ./build",
+    "clean": "npm i && rm -fr ./build",
     "package": "rm -fr ./build && tsc && ./make-releases.sh",
     "dev-start": "npm run package && npm run start"
   },
