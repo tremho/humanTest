@@ -2,6 +2,21 @@
 
 ###### Let the robots test code, but let people judge content
 
+[![Build Status][build-status]][build-url]
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+[![TotalDownloads][total-downloads-image]][npm-url]
+[![Twitter Follow][twitter-image]][twitter-url]
+
+[build-status]:https://travis-ci.org/tremho/humanTest.svg?branch=develop
+[build-url]:https://travis-ci.org/tremho/humanTest
+[npm-image]:http://img.shields.io/npm/v/humanTest.svg
+[npm-url]:https://npmjs.org/package/humanTest
+[downloads-image]:http://img.shields.io/npm/dm/humanTest.svg
+[total-downloads-image]:http://img.shields.io/npm/dt/humanTest.svg?label=total%20downloads
+[twitter-image]:https://img.shields.io/twitter/follow/Tremho1.svg?style=social&label=Follow%20me
+[twitter-url]:https://twitter.com/Tremho1
+
 You've committed to creating a bulletproof software development pipeline
 and have rigorously implemented unit and integration test frameworks into
 your workflow.  *Good for you!*
@@ -622,6 +637,17 @@ If not given, defaults for each value are used.
 ### Known issues
 
 There are currently no known issues.
-See also the [Github repository issues page]()
+See also the [Github repository issues page](https://github.com/tremho/humanTest/issues)
 
 ### Contributing
+
+If you have ideas for making `HumanTest` better, please visit
+the [Github repository issues page](https://github.com/tremho/humanTest/issues)
+page and record your suggestions there.
+
+If you would like to commit code that addresses an outstanding issue, please
+fork the repository and post a pull request with your changes.
+
+If you simply want to comment or if you have other reason to contact me,
+feel free to send me email at [steve@ohmert.com](mailto:steve@ohmert.com)
+

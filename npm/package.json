@@ -4,8 +4,11 @@
   "description": "Support for human-aided testing tasks in test frameworks",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tap Tap.test.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "tap": "^14.10.8"
+  }
 }

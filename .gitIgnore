@@ -14,3 +14,4 @@ ThunderBolt/node_modules/
 ThunderBolt/electronMain/node_modules/
 webfonts
 scss/fa-scss
+npm/.nyc_output
