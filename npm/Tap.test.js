@@ -27,13 +27,23 @@ tap.ok(humanTest.viewFile, 'function should be exported')
 tap.ok(fs.existsSync(exampleRoot), 'Expect example directory to exist')
 
 
-humanTest.startManualTest('Tap testing')
+try {
+    humanTest.startManualTest('Tap testing')
+} catch(e) {
+    console.error(e)
+    tap.fail(e.message)
+}
 // verifyHuman has a default timeout of 120 seconds, so we need to wait at least that long
 tap.test('Verify Human', t => {
-    humanTest.verifyHumanAvailable().then(result => {
-        // t.ok(result.passed)
-        t.end()
-    })
+    try {
+        humanTest.verifyHumanAvailable().then(result => {
+            // t.ok(result.passed)
+            t.end()
+        })
+    } catch(e) {
+        console.error(e)
+        t.fail(e.message)
+    }
 })
 
 // other tests have a timeout of 30 seconds, which matches Tap's default timeout, so no real need to set it for these.
