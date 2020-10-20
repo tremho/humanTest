@@ -4,7 +4,7 @@
   "description": "Test Harness and GUI app for manual asset verification",
   "main": "build/ExchangeFlow.js",
   "scripts": {
-    "test": "cd npm; npm test",
+    "test": "npm run gen-npm && cd npm && npm test",
     "clean": "rm -fr ./build && cd ThunderBolt; npm run clean",
     "start": "rm -fr ./build; tsc && node ./build/main.js",
     "build": "npm run clean && tsc && cd ThunderBolt; npm run build",

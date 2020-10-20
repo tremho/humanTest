@@ -8,18 +8,25 @@
 [![TotalDownloads][total-downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
-[build-status]:https://travis-ci.org/tremho/humanTest.svg?branch=develop
-[build-url]:https://travis-ci.org/tremho/humanTest
-[npm-image]:http://img.shields.io/npm/v/humanTest.svg
-[npm-url]:https://npmjs.org/package/humanTest
-[downloads-image]:http://img.shields.io/npm/dm/humanTest.svg
-[total-downloads-image]:http://img.shields.io/npm/dt/humanTest.svg?label=total%20downloads
-[twitter-image]:https://img.shields.io/twitter/follow/Tremho1.svg?style=social&label=Follow%20me
-[twitter-url]:https://twitter.com/Tremho1
+[build-status]: https://travis-ci.org/tremho/humanTest.svg?branch=develop
+
+[build-url]: https://travis-ci.org/tremho/humanTest
+
+[npm-image]: http://img.shields.io/npm/v/humanTest.svg
+
+[npm-url]: https://npmjs.org/package/humanTest
+
+[downloads-image]: http://img.shields.io/npm/dm/humanTest.svg
+
+[total-downloads-image]: http://img.shields.io/npm/dt/humanTest.svg?label=total%20downloads
+
+[twitter-image]: https://img.shields.io/twitter/follow/Tremho1.svg?style=social&label=Follow%20me
+
+[twitter-url]: https://twitter.com/Tremho1
 
 You've committed to creating a bulletproof software development pipeline
 and have rigorously implemented unit and integration test frameworks into
-your workflow.  *Good for you!*
+your workflow.  _Good for you!_
 
 But some things seem to defy practical means of testing. For example,
 you can certainly test if the content field of your Very Important Blog Experience (VIBE)
@@ -35,12 +42,12 @@ And so they go untested.  Or at least, officially untested.  Of course, you
 check these things when you do them -- visually -- and trust they won't
 change for some reason down the road.
 
-Oh, sure, you *theoretically could* devise an automation solution for these scenarios,
+Oh, sure, you _theoretically could_ devise an automation solution for these scenarios,
 adopting difficult to implement image comparators, or AI-based text analysers, but
 that's more work than the rest of your project, so you (sensibly) don't do that.
 
 Besides, do these solutions -- whether overly pedantic about trivial details (like a single pixel being 0.25 chroma different)
-, or slippery "fuzzy-logic" interpretations of an AI model -- *really* qualify to be the 
+, or slippery "fuzzy-logic" interpretations of an AI model -- _really_ qualify to be the 
 arbiter of what is right for your project?
 
 Some thing should be tested by humans.  We humans are able to understand
@@ -52,6 +59,7 @@ pull in the otherwise neglected part of the workflow components and simply
 ask someone "is this okay?"
 
 #### Humans are flakey, but useful
+
 Humans may not always be around.  If you are doing Continuous Integration
 on  your code, especially in the cloud, your chances of finding a handy human
 tester is basically zero.
@@ -69,14 +77,14 @@ the assumptions that went into product design.
 
 ### Features
 
-- Works with any test framework that supports asynchronous actions
-- Examples for Tap and Jasmine provided
-- Safe for use in CI environments
-- Will proceed to skip after timeout if no human is available, or walks away.
-- Allows user to view and judge text contents
-- Allows a user to accept or reject differences in text
-- Allows a user to view and judge and image
-- Allows a user to compare two images -- side-by-side and blink-flip
+-   Works with any test framework that supports asynchronous actions
+-   Examples for Tap and Jasmine provided
+-   Safe for use in CI environments
+-   Will proceed to skip after timeout if no human is available, or walks away.
+-   Allows user to view and judge text contents
+-   Allows a user to accept or reject differences in text
+-   Allows a user to view and judge and image
+-   Allows a user to compare two images -- side-by-side and blink-flip
 
 ### Screen Shots
 
@@ -85,47 +93,48 @@ the assumptions that went into product design.
 npm install --save-dev human-test
 
 ### Usage
+
 Use within the module of your test code.
 
-```
-var humanTest = require('human-test')
+    var humanTest = require('human-test')
 
-humanTest.startManualTests('Title to Display')
-humanTest.verifyHumanAvailable().then(result => {
-    // process the result if desired
-})
-humanTest.viewFile('path/to/file.txt').then(result => {
-    // process the result for passed / skipped, etc.
-})
-```
-alternately:
-```
-var {
-startManualTest, 
-endManualTest,
-viewFile,
-showText,
-diff,
-viewImage,
-compareImages
-} = require('humanTest')
-
-async function testStuff() {
-    startManualTests('Title to Display')
-    await verifyHumanAvailable().then(result => {
+    humanTest.startManualTests('Title to Display')
+    humanTest.verifyHumanAvailable().then(result => {
         // process the result if desired
     })
-    await viewFile('path/to/file.txt').then(result => {
+    humanTest.viewFile('path/to/file.txt').then(result => {
         // process the result for passed / skipped, etc.
     })
-    // ... other commands as desired
-    endManualTest()
-```
+
+alternately:
+
+    var {
+    startManualTest, 
+    endManualTest,
+    viewFile,
+    showText,
+    diff,
+    viewImage,
+    compareImages
+    } = require('humanTest')
+
+    async function testStuff() {
+        startManualTests('Title to Display')
+        await verifyHumanAvailable().then(result => {
+            // process the result if desired
+        })
+        await viewFile('path/to/file.txt').then(result => {
+            // process the result for passed / skipped, etc.
+        })
+        // ... other commands as desired
+        endManualTest()
+
 How you actually use the API in your test framework depends
 upon the test framework you prefer and what the syntax
 of that framework allows.
 
 ### Using with Tap
+
 [`TapJS`](https://node-tap.org) is the preferred testing framework of this author, but
 if you don't agree, that's okay.  
 
@@ -139,209 +148,205 @@ frameworks available.  If you are not already familiar with it, check it out.
 
 Here is an example test script designed for Tap:
 
-```
+    process.env.TAP_TIMEOUT = 0 // Required so tap doesn't timeout (or run tap with --no-timeout)
 
-process.env.TAP_TIMEOUT = 0 // Required so tap doesn't timeout (or run tap with --no-timeout)
+    // import the modules we need
+    const humanTest = require('human-test')
+    const tap = require('tap')
+    const fs  = require('fs')
+    const path = require('path')
 
-// import the modules we need
-const humanTest = require('human-test')
-const tap = require('tap')
-const fs  = require('fs')
-const path = require('path')
+    // define the constants we'll use in testing
+    const exampleRoot = path.join(__dirname, 'example')
 
-// define the constants we'll use in testing
-const exampleRoot = path.join(__dirname, 'example')
-
-const fileToView = path.join(exampleRoot, 'textFile.txt')
-const fileToDiff = path.join(exampleRoot, 'diffFile.txt')
-const picToView = path.join(exampleRoot, 'dog.jpg')
-const picToDiff = path.join(exampleRoot, 'cat.jpg')
-const smiley = path.join(exampleRoot, 'smiley.png')
-const noSmiley = path.join(exampleRoot, 'no-smiley.png')
-const stringToView = 'The time is now for all good foxes to jump over the lazy dog\'s back'
+    const fileToView = path.join(exampleRoot, 'textFile.txt')
+    const fileToDiff = path.join(exampleRoot, 'diffFile.txt')
+    const picToView = path.join(exampleRoot, 'dog.jpg')
+    const picToDiff = path.join(exampleRoot, 'cat.jpg')
+    const smiley = path.join(exampleRoot, 'smiley.png')
+    const noSmiley = path.join(exampleRoot, 'no-smiley.png')
+    const stringToView = 'The time is now for all good foxes to jump over the lazy dog\'s back'
 
 
-// conduct the test
+    // conduct the test
 
-tap.ok(humanTest, 'module loaded')
-tap.ok(humanTest.startManualTest, 'function should be exported')
-tap.ok(humanTest.endManualTest, 'function should be exported')
-tap.ok(humanTest.viewFile, 'function should be exported')
+    tap.ok(humanTest, 'module loaded')
+    tap.ok(humanTest.startManualTest, 'function should be exported')
+    tap.ok(humanTest.endManualTest, 'function should be exported')
+    tap.ok(humanTest.viewFile, 'function should be exported')
 
-tap.ok(fs.existsSync(exampleRoot), 'Expect example directory to exist')
+    tap.ok(fs.existsSync(exampleRoot), 'Expect example directory to exist')
 
-// Do the human parts of testing:
+    // Do the human parts of testing:
 
-humanTest.startManualTest('Tap testing')
-// verifyHuman has a default timeout of 120 seconds, so we need to wait at least that long
-tap.test('Verify Human', t => {
-    humanTest.verifyHumanAvailable().then(result => {
-        // t.ok(result.passed)
-        t.end()
+    humanTest.startManualTest('Tap testing')
+    // verifyHuman has a default timeout of 120 seconds, so we need to wait at least that long
+    tap.test('Verify Human', t => {
+        humanTest.verifyHumanAvailable().then(result => {
+            // t.ok(result.passed)
+            t.end()
+        })
     })
-})
 
-// other tests have a timeout of 30 seconds, which matches Tap's default timeout, so no real need to set it for these.
-tap.test('viewFile Test', t => {
-    humanTest.viewFile(fileToView).then(result => {
-        if (result.skipped) tap.skip(result.comment)
-        else t.ok(result.passed, result.comment)
-        t.end()
+    // other tests have a timeout of 30 seconds, which matches Tap's default timeout, so no real need to set it for these.
+    tap.test('viewFile Test', t => {
+        humanTest.viewFile(fileToView).then(result => {
+            if (result.skipped) tap.skip(result.comment)
+            else t.ok(result.passed, result.comment)
+            t.end()
+        })
     })
-})
-tap.test('showText Test', t => {
-    humanTest.showText(stringToView).then(result => {
-        if (result.skipped) t.skip(result.comment)
-        else t.ok(result.passed, result.comment)
-        t.end()
+    tap.test('showText Test', t => {
+        humanTest.showText(stringToView).then(result => {
+            if (result.skipped) t.skip(result.comment)
+            else t.ok(result.passed, result.comment)
+            t.end()
+        })
     })
-})
 
-tap.test('viewImage Test', t => {
-    humanTest.viewImage(picToView).then(result => {
-        if (result.skipped) t.skip(result.comment)
-        else t.ok(result.passed, result.comment)
-        t.end()
+    tap.test('viewImage Test', t => {
+        humanTest.viewImage(picToView).then(result => {
+            if (result.skipped) t.skip(result.comment)
+            else t.ok(result.passed, result.comment)
+            t.end()
+        })
     })
-})
-tap.test('diff Test', t=> {
-    humanTest.diff(fileToView, fileToDiff).then(result => {
-        if (result.skipped) t.skip(result.comment)
-        else t.ok(result.passed, result.comment)
-        t.end()
+    tap.test('diff Test', t=> {
+        humanTest.diff(fileToView, fileToDiff).then(result => {
+            if (result.skipped) t.skip(result.comment)
+            else t.ok(result.passed, result.comment)
+            t.end()
+        })
     })
-})
-tap.test('compareImages Test', t => {
-    humanTest.compareImages(picToView, picToDiff).then(result => {
-        if (result.skipped) t.skip(result.comment)
-        else t.ok(result.passed, result.comment)
+    tap.test('compareImages Test', t => {
+        humanTest.compareImages(picToView, picToDiff).then(result => {
+            if (result.skipped) t.skip(result.comment)
+            else t.ok(result.passed, result.comment)
 
-        t.end()
+            t.end()
+        })
     })
-})
-tap.test('blink images Test', t=> {
-    humanTest.compareImages(noSmiley, smiley, {
-        specialNotice: "Use the 'blink' feature to verify smile goes on face properly",
-        prompt: "Do images align?"
-        }).then(result => {
-        if (result.skipped) t.skip(result.comment)
-        else t.ok(result.passed, result.comment)
+    tap.test('blink images Test', t=> {
+        humanTest.compareImages(noSmiley, smiley, {
+            specialNotice: "Use the 'blink' feature to verify smile goes on face properly",
+            prompt: "Do images align?"
+            }).then(result => {
+            if (result.skipped) t.skip(result.comment)
+            else t.ok(result.passed, result.comment)
 
-        humanTest.endManualTest()
-        t.end()
+            humanTest.endManualTest()
+            t.end()
+        })
     })
-})
 
-```
 ### Using with Jasmine
+
 Jasmine is a very popular test framework, although it is getting a little
 long in the tooth these days.  Jasmine is also representative in basic approach and syntax
 to a number of related or dependent frameworks, such as [mocha](https://mochajs.org), [jest](https://jestjs.io), and [many others](https://alternativeto.net/software/jasmine/)
 
 Jasmine tests have the following disadvantages over Tap, in the context of using `humanTest`:
-- Tests will execute in a random order
-- If a `HumanTest` test results in a 'skipped' test, there is no way for Jasmine to mark the test
-it is currently running as skipped.  Using some other reporting mechanism is recommended.
+
+-   Tests will execute in a random order
+-   If a `HumanTest` test results in a 'skipped' test, there is no way for Jasmine to mark the test
+    it is currently running as skipped.  Using some other reporting mechanism is recommended.
 
 Here is an example test script designed for Jasmine:
 
-```
+    // import required modules
+    const humanTest = require('human-test')
+    const fs  = require('fs')
+    const path = require('path')
 
-// import required modules
-const humanTest = require('human-test')
-const fs  = require('fs')
-const path = require('path')
-
-// define the constants we'll use in testing
-const exampleRoot = path.join(__dirname, '..', 'example') // jasmine starts life in the spec directory
+    // define the constants we'll use in testing
+    const exampleRoot = path.join(__dirname, '..', 'example') // jasmine starts life in the spec directory
 
 
-const fileToView = path.join(exampleRoot, 'textFile.txt')
-const fileToDiff = path.join(exampleRoot, 'diffFile.txt')
-const picToView = path.join(exampleRoot, 'dog.jpg')
-const picToDiff = path.join(exampleRoot, 'cat.jpg')
-const smiley = path.join(exampleRoot, 'smiley.png')
-const noSmiley = path.join(exampleRoot, 'no-smiley.png')
-const stringToView = 'The time is now for all good foxes to jump over the lazy dog\'s back'
+    const fileToView = path.join(exampleRoot, 'textFile.txt')
+    const fileToDiff = path.join(exampleRoot, 'diffFile.txt')
+    const picToView = path.join(exampleRoot, 'dog.jpg')
+    const picToDiff = path.join(exampleRoot, 'cat.jpg')
+    const smiley = path.join(exampleRoot, 'smiley.png')
+    const noSmiley = path.join(exampleRoot, 'no-smiley.png')
+    const stringToView = 'The time is now for all good foxes to jump over the lazy dog\'s back'
 
 
-// Tests for non-manual aspects of the system under test are conducted as always
-describe("Jasmine HumanTest suite", function() {
-  it("HumanTest module was loaded", function () {
-    expect(humanTest).toBeDefined()
-  });
-  it("HumanTest module exports expected functions", function () {
-    expect(humanTest.startManualTest).toBeDefined()
-    expect(humanTest.endManualTest).toBeDefined()
-    expect(humanTest.viewFile).toBeDefined()
-  });
-  it('Expect example directory to exist', function () {
-    expect(fs.existsSync(exampleRoot)).toBe(true)
-  })
-})
-// Manual (human) testing is bracketed by the startManualTesting and endManualTesting API calls.
-// which we'll put in our `beforeAll` and `afterAll` handlers.
-describe('Begin Manual Testing', function() {
-  // We must set the jasmine timeout to be greater than the timeout for verifyHumanAvailable
-  // or beforeAll will exit early and the tests will run prematurely and fail
-  // Note that we could set this to 30 seconds after verifyHuman to match the default for each test from then on, but there's no need.
-  var defTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
-  jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000; // neutralize jasmine async timeout
-  beforeAll(function() {
-    humanTest.startManualTest('Jasmine Tests')
-    return humanTest.verifyHumanAvailable()
-  })
-  afterAll(function(done) {
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = defTimeout
-    humanTest.endManualTest()
-    done()
-  })
-  it('View File', async function() {
-    const result = await humanTest.viewFile(fileToView)
-    // Jasmine has no provision for marking a test skipped once it has started executing.
-    // Other frameworks might.
-    // Alternately, you may choose to mark a skipped test as 'failed' but with a specific label so it is
-    // recognized as a skipped test in the test report.
-    expect(result.skipped).not.toBe(true)
-    expect(result.error).not.toBeDefined()
-    expect(result.passed).toBe(true)
-    // Handle comments in any way that makes sense to your test reporting system.
-    if(result.comment) console.log('ViewFile comment ' + result.comment)
-  })
-  it('Show Text', async function() {
-    const result = await humanTest.showText(stringToView)
-    expect(result.passed).toBe(true)
-  })
-  it('View Image (and use options)', async function() {
-    const result = await humanTest.viewImage(picToView, {
-      prompt: "Is this a dog?", // give our own prompt text
-      specialNotice: 'Study the picture carefully and answer truthfully', // This is a special notice that will pop up over test display.
-      timeout: 45, // give a slightly longer timeout (default is 30 seconds)
-      width: 500, // viewImage also accepts width and height options
-      height: 500
+    // Tests for non-manual aspects of the system under test are conducted as always
+    describe("Jasmine HumanTest suite", function() {
+      it("HumanTest module was loaded", function () {
+        expect(humanTest).toBeDefined()
+      });
+      it("HumanTest module exports expected functions", function () {
+        expect(humanTest.startManualTest).toBeDefined()
+        expect(humanTest.endManualTest).toBeDefined()
+        expect(humanTest.viewFile).toBeDefined()
+      });
+      it('Expect example directory to exist', function () {
+        expect(fs.existsSync(exampleRoot)).toBe(true)
+      })
     })
-    expect(result.passed).toBe(true)
-  })
-  it('diffText', async function() {
-    const result = await humanTest.diff(fileToView, fileToDiff)
-    expect(result.passed).toBe(true)
-  })
-  it('compareImages', async function() {
-    const result = await humanTest.compareImages(picToView, picToDiff)
-    expect(result.passed).toBe(true)
-  })
-  it('blink compare test', async function() {
-    const result = await humanTest.compareImages(noSmiley, smiley, {
-      specialNotice: "Use the 'blink' feature to verify smile goes on face properly",
-      prompt: "Do images align?"
-    })
-    expect(result.passed).toBe(true)
-  })
-});
-```
- 
+    // Manual (human) testing is bracketed by the startManualTesting and endManualTesting API calls.
+    // which we'll put in our `beforeAll` and `afterAll` handlers.
+    describe('Begin Manual Testing', function() {
+      // We must set the jasmine timeout to be greater than the timeout for verifyHumanAvailable
+      // or beforeAll will exit early and the tests will run prematurely and fail
+      // Note that we could set this to 30 seconds after verifyHuman to match the default for each test from then on, but there's no need.
+      var defTimeout = jasmine.DEFAULT_TIMEOUT_INTERVAL;
+      jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000; // neutralize jasmine async timeout
+      beforeAll(function() {
+        humanTest.startManualTest('Jasmine Tests')
+        return humanTest.verifyHumanAvailable()
+      })
+      afterAll(function(done) {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = defTimeout
+        humanTest.endManualTest()
+        done()
+      })
+      it('View File', async function() {
+        const result = await humanTest.viewFile(fileToView)
+        // Jasmine has no provision for marking a test skipped once it has started executing.
+        // Other frameworks might.
+        // Alternately, you may choose to mark a skipped test as 'failed' but with a specific label so it is
+        // recognized as a skipped test in the test report.
+        expect(result.skipped).not.toBe(true)
+        expect(result.error).not.toBeDefined()
+        expect(result.passed).toBe(true)
+        // Handle comments in any way that makes sense to your test reporting system.
+        if(result.comment) console.log('ViewFile comment ' + result.comment)
+      })
+      it('Show Text', async function() {
+        const result = await humanTest.showText(stringToView)
+        expect(result.passed).toBe(true)
+      })
+      it('View Image (and use options)', async function() {
+        const result = await humanTest.viewImage(picToView, {
+          prompt: "Is this a dog?", // give our own prompt text
+          specialNotice: 'Study the picture carefully and answer truthfully', // This is a special notice that will pop up over test display.
+          timeout: 45, // give a slightly longer timeout (default is 30 seconds)
+          width: 500, // viewImage also accepts width and height options
+          height: 500
+        })
+        expect(result.passed).toBe(true)
+      })
+      it('diffText', async function() {
+        const result = await humanTest.diff(fileToView, fileToDiff)
+        expect(result.passed).toBe(true)
+      })
+      it('compareImages', async function() {
+        const result = await humanTest.compareImages(picToView, picToDiff)
+        expect(result.passed).toBe(true)
+      })
+      it('blink compare test', async function() {
+        const result = await humanTest.compareImages(noSmiley, smiley, {
+          specialNotice: "Use the 'blink' feature to verify smile goes on face properly",
+          prompt: "Do images align?"
+        })
+        expect(result.passed).toBe(true)
+      })
+    });
 
 ### Handling comments, or unhandled skips
+
 When a `TestResponse` object is returned from a `HumanTest` test command,
 any comments the user entered in the GUI app's test area is relayed in the
 `comment` property.  What can practically be done with this information 
@@ -359,32 +364,30 @@ appropriate mechanism for reporting this level of feedback as well.
 
 Perhaps the following psuedo-code outlining this idea will be inspirational
 to your own implementation:
-```
-const htResultsMap = {}
 
-// hopefully you'd make a prettier output than this, but
-// even an object dump is informative for this purpose
-function reportHumanTestResults() {
-  Object.getOwnPropertyNames(htResultsMap).forEach(name => {
-    const results = htResultsMap[name]
-    console.log(name, results)
-   })
-}
+    const htResultsMap = {}
 
-// conduct the tests
+    // hopefully you'd make a prettier output than this, but
+    // even an object dump is informative for this purpose
+    function reportHumanTestResults() {
+      Object.getOwnPropertyNames(htResultsMap).forEach(name => {
+        const results = htResultsMap[name]
+        console.log(name, results)
+       })
+    }
 
-/*do the test called testname */ => result => {
-    htResultsMap[testname] = result;
-})
-...
-// when all done
-reportHumanTestResults()
+    // conduct the tests
 
-```
-
+    /*do the test called testname */ => result => {
+        htResultsMap[testname] = result;
+    })
+    ...
+    // when all done
+    reportHumanTestResults()
 
 ### Using with other test frameworks
-There should be no reason that *any* test framework can't be made
+
+There should be no reason that _any_ test framework can't be made
 to work with `HumanTest`.
 
 If you have examples of using other test frameworks, please share them.
@@ -392,22 +395,22 @@ Use the contact information in this readme and/or post as an
 issue or pull request to the GitHub repository.
 
 #### Some things to know:
-- The `HumanTest` Display app is an Electron-based app process that reads and writes via stdin/stdout to 
-communicate with the test harness.
 
-- The `HumanTest` Display app is designed to run on Mac, Windows, and Linux platforms, 
-but has not been extensively tested on all system variants.  If you experience problems
-with this in any way on  your platform, please contact us.
+-   The `HumanTest` Display app is an Electron-based app process that reads and writes via stdin/stdout to 
+    communicate with the test harness.
 
-- `HumanTest` automatically gates access to each test, so if a test is in progress, a 
-call to run the next test will wait until the prior one finishes.
+-   The `HumanTest` Display app is designed to run on Mac, Windows, and Linux platforms, 
+    but has not been extensively tested on all system variants.  If you experience problems
+    with this in any way on  your platform, please contact us.
 
+-   `HumanTest` automatically gates access to each test, so if a test is in progress, a 
+    call to run the next test will wait until the prior one finishes.
 
 ### Test timeouts
+
 Make sure you have either disabled or suspended the default timeout for
 asynchronous operations for whatever test framework you are using, since the
 human-enacted tests can easily exceed these limits.
-
 
 ### API
 
@@ -458,7 +461,7 @@ When done with _all_ tests, call `endManualTest()`
 ##### Examples
 
 ```javascript
-`startManualTest('Verify Content')`
+startManualTest('Verify Content')
 ```
 
 Returns **any** void  This does not return a promise like the other commands
@@ -471,7 +474,7 @@ This should be called after the last test command is handled.
 ##### Examples
 
 ```javascript
-`endManualTest()`
+endManualTest()
 ```
 
 #### verifyHumanAvailable
@@ -488,9 +491,9 @@ Also in that case, all subsequent tests are automatically skipped, with the comm
 ##### Examples
 
 ```javascript
-`verifyHumanAvailable({timeout:60}).then(result => {
-      if(result.skipped) console.log('no human is available!')
-})`
+verifyHumanAvailable({timeout:60}).then(result => {
+  if(result.skipped) console.log('no human is available!')
+})
 ```
 
 #### viewFile
@@ -505,9 +508,9 @@ Displays the contents of a text file and prompts the user for pass/fail/skip or 
 ##### Examples
 
 ```javascript
-`viewFile('path/to/myfile.txt').then(result => {
-      if(result.passed) console.log('looks okay!')
-})`
+viewFile('path/to/myfile.txt').then(result => {
+  if(result.passed) console.log('looks okay!')
+})
 ```
 
 #### showText
@@ -522,11 +525,11 @@ Displays the given text and prompts the user for pass/fail/skip or comments
 ##### Examples
 
 ```javascript
-`showText("literal text to be shown in view box").then(result => {
-      if(result.passed) console.log('looks okay!')
-      else if(result.skipped) console.log('test was skipped')
-      else console.error('test failed!')
-})`
+showText("literal text to be shown in view box").then(result => {
+  if(result.passed) console.log('looks okay!')
+  else if(result.skipped) console.log('test was skipped')
+  else console.error('test failed!')
+})
 ```
 
 #### diff
@@ -545,11 +548,11 @@ arg is treated as a filename if file exists at the path, otherwise as text.
 ##### Examples
 
 ```javascript
-`diff(filenameOrString1, filenameOrString2).then(result => {
-      if(result.passed) console.log('looks okay!')
-      else if(result.skipped) console.log('test was skipped')
-      else console.error('test failed!')
-})`
+diff(filenameOrString1, filenameOrString2).then(result => {
+  if(result.passed) console.log('looks okay!')
+  else if(result.skipped) console.log('test was skipped')
+  else console.error('test failed!')
+})
 ```
 
 #### viewImage
@@ -564,19 +567,19 @@ Displays the image file and prompts the user for pass/fail/skip or comments
 ##### Examples
 
 ```javascript
-`viewImage('./images/prettyBird.png').then(result => {
-      if(result.passed) console.log('looks okay!')
-      else if(result.skipped) console.log('test was skipped')
-      else console.error('test failed!')
-})`
+viewImage('./images/prettyBird.png').then(result => {
+  if(result.passed) console.log('looks okay!')
+  else if(result.skipped) console.log('test was skipped')
+  else console.error('test failed!')
+})
 
 The `width` and `height` options are recognized by this command:
 ```
 
 ```javascript
-`viewImage('./images/prettyBird.png', {width:400, height: 400}).then(result => {
+viewImage('./images/prettyBird.png', {width:400, height: 400}).then(result => {
       ...
-})`
+})
 ```
 
 #### compareImages
@@ -649,5 +652,4 @@ If you would like to commit code that addresses an outstanding issue, please
 fork the repository and post a pull request with your changes.
 
 If you simply want to comment or if you have other reason to contact me,
-feel free to send me email at [steve@ohmert.com](mailto:steve@ohmert.com)
-
+feel free to send me email at <mailto:steve@ohmert.com>
