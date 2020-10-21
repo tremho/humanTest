@@ -25,7 +25,9 @@ let unattendedMessage = 'unattended'
  * When done with *all* tests, call `endManualTest()`
  *
  * @param {string} [title] If not given, a default title will be displayed
- * @return void  This does not return a promise like the other commands
+ * @return Promise<number>  Return can be ignored; resolves to 0 if remote app launched successfully.
+ *
+ * If the remote app does not run, subsequent tests are skipped.
  *
  * @example startManualTest('Verify Content')
  *
@@ -129,7 +131,7 @@ export function endManualTest() {
  * })
  */
 export function verifyHumanAvailable(options?:TestOptions) {
-    console.log('verify Human')
+    // console.log('verify Human')
     const cmd = new Command()
     cmd.cmd = 'verifyHuman'
     cmd.options = options
@@ -270,19 +272,19 @@ Manages the exchange with the remote app
  @private
  */
 function manualTest(command:Command):Promise<TestResponse> {
-    console.log('manual test')
+    // console.log('manual test')
     if (skipAll) {
         const skipResponse = new TestResponse()
         skipResponse.skipped = true;
         skipResponse.comment = unattendedMessage;
         return Promise.resolve(skipResponse)
     }
-    console.log('manual test - gating')
+    // console.log('manual test - gating')
     return gatingPromise.then(() => {
         gatingPromise = new Promise(resolve => {
             gateResolver = resolve
         })
-        console.log('manual test - waiting for prompt')
+        // console.log('manual test - waiting for prompt')
         return promptPromise.then(() => {
             if(skipAll) return Promise.resolve(new TestResponse())
             resetPromptPromise();
