@@ -13,7 +13,12 @@ import * as path from 'path'
 
 const root = path.resolve(path.join(__dirname, '..'))
 
-startManualTest()
+console.log("Starting.....")
+startManualTest().then(rt => {
+    console.log("Start Manual Test returns " + rt)
+}).catch(e => {
+    console.error(e)
+})
 
 // this is a placeholder, since harness is to be used as a library,
 // but it can run some tests on the harness functions,

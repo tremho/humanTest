@@ -12,6 +12,7 @@ let responseResolver;
 let gatingPromise = Promise.resolve()
 let gateResolver;
 let skipAll = false;
+let unattendedMessage = 'unattended'
 
 
 /**
@@ -44,6 +45,9 @@ export function startManualTest(title?:string) {
 
     if(!fs.existsSync(appPath)) {
         console.error('HumanTest executable not found at '+appPath)
+        skipAll = true
+        promptResolver()
+        unattendedMessage = 'Remote executable not found'
         return Promise.resolve(-1)
     }
 
@@ -59,6 +63,9 @@ export function startManualTest(title?:string) {
             console.error('Launch Remote error')
             console.error(' Error code: '+code);
             console.error(' Signal received: '+signal);
+            skipAll = true
+            promptResolver()
+            unattendedMessage = 'Remote executable failed to run'
             resolve(-1)
         })
         proc.on('message', (...args) => {
@@ -73,7 +80,7 @@ export function startManualTest(title?:string) {
             // console.warn('remote close received')
         })
         proc.on('exit', (code, signal) => {
-            // console.log(`remote has exited, code=${code}, signal=${signal}`)
+            // console.log(`remote has exited, code=${code}, signal=${signal}`
             remoteStdIn = null;
             resolve(code)
         })
@@ -92,6 +99,7 @@ export function startManualTest(title?:string) {
         remoteStdIn = proc.stdin;
         resetPromptPromise()
         // console.log('[Harness] remote launched!')
+        return Promise.resolve(0)
     })
 }
 
@@ -121,6 +129,7 @@ export function endManualTest() {
  * })
  */
 export function verifyHumanAvailable(options?:TestOptions) {
+    console.log('verify Human')
     const cmd = new Command()
     cmd.cmd = 'verifyHuman'
     cmd.options = options
@@ -261,17 +270,21 @@ Manages the exchange with the remote app
  @private
  */
 function manualTest(command:Command):Promise<TestResponse> {
+    console.log('manual test')
     if (skipAll) {
         const skipResponse = new TestResponse()
         skipResponse.skipped = true;
-        skipResponse.comment = 'unattended';
+        skipResponse.comment = unattendedMessage;
         return Promise.resolve(skipResponse)
     }
+    console.log('manual test - gating')
     return gatingPromise.then(() => {
         gatingPromise = new Promise(resolve => {
             gateResolver = resolve
         })
+        console.log('manual test - waiting for prompt')
         return promptPromise.then(() => {
+            if(skipAll) return Promise.resolve(new TestResponse())
             resetPromptPromise();
             writeCommand(command)
             return watchForResponse()
