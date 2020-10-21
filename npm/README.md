@@ -83,10 +83,18 @@ the assumptions that went into product design.
 -   Will proceed to skip after timeout if no human is available, or walks away.
 -   Allows user to view and judge text contents
 -   Allows a user to accept or reject differences in text
--   Allows a user to view and judge and image
+-   Allows a user to view and judge an image
 -   Allows a user to compare two images -- side-by-side and blink-flip
 
 ### Screen Shots
+
+|   |   |   |
+|---|:---:|---|
+| | ![ss1](images/ss1.png) | |
+| | ![ss2](images/ss2.png) | |
+| | ![ss3](images/ss3.png) | |
+| | ![ss4](images/ss4.png) | |
+| | ![ss5](images/ss5.png) | |
 
 ### Installation
 
