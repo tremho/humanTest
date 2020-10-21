@@ -13,6 +13,7 @@ let gatingPromise = Promise.resolve()
 let gateResolver;
 let skipAll = false;
 let unattendedMessage = 'unattended'
+let runStarted;
 
 
 /**
@@ -83,6 +84,9 @@ export function startManualTest(title?:string) {
         })
         proc.on('exit', (code, signal) => {
             console.log(`remote has exited, code=${code}, signal=${signal}`)
+            skipAll = true
+            promptResolver()
+            unattendedMessage = 'Remote executable exited prematurely.'
             remoteStdIn = null;
             resolve(code)
         })
