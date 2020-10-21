@@ -13,7 +13,6 @@ let gatingPromise = Promise.resolve()
 let gateResolver;
 let skipAll = false;
 let unattendedMessage = 'unattended'
-let runStarted;
 
 
 /**
@@ -60,7 +59,7 @@ export function startManualTest(title?:string) {
     // console.log('[Harness] launching remote app...', appPath)
 
     return new Promise(resolve => {
-        console.log('[Harness] executing...', appPath)
+        // console.log('[Harness] executing...', appPath)
         const proc = spawn(appPath, [title || '']);
         proc.on('error', (code, signal) => {
             console.error('Launch Remote error')
