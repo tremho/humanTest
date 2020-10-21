@@ -8,17 +8,17 @@
 [![TotalDownloads][total-downloads-image]][npm-url]
 [![Twitter Follow][twitter-image]][twitter-url]
 
-[build-status]: https://travis-ci.org/tremho/humanTest.svg?branch=develop
+[build-status]: https://travis-ci.com/tremho/humanTest.svg?branch=master
 
 [build-url]: https://travis-ci.org/tremho/humanTest
 
-[npm-image]: http://img.shields.io/npm/v/humanTest.svg
+[npm-image]: http://img.shields.io/npm/v/human-test.svg
 
-[npm-url]: https://npmjs.org/package/humanTest
+[npm-url]: https://npmjs.org/package/human-test
 
-[downloads-image]: http://img.shields.io/npm/dm/humanTest.svg
+[downloads-image]: http://img.shields.io/npm/dm/human-test.svg
 
-[total-downloads-image]: http://img.shields.io/npm/dt/humanTest.svg?label=total%20downloads
+[total-downloads-image]: http://img.shields.io/npm/dt/human-test.svg?label=total%20downloads
 
 [twitter-image]: https://img.shields.io/twitter/follow/Tremho1.svg?style=social&label=Follow%20me
 
