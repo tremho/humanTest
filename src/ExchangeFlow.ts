@@ -59,7 +59,7 @@ export function startManualTest(title?:string) {
     // console.log('[Harness] launching remote app...', appPath)
 
     return new Promise(resolve => {
-        // console.log('[Harness] executing...', appPath)
+        console.log('[Harness] executing...', appPath)
         const proc = spawn(appPath, [title || '']);
         proc.on('error', (code, signal) => {
             console.error('Launch Remote error')
@@ -79,16 +79,16 @@ export function startManualTest(title?:string) {
         })
         proc.on('close', () => {
             remoteStdIn = null;
-            // console.warn('remote close received')
+            console.warn('remote close received')
         })
         proc.on('exit', (code, signal) => {
-            // console.log(`remote has exited, code=${code}, signal=${signal}`
+            console.log(`remote has exited, code=${code}, signal=${signal}`)
             remoteStdIn = null;
             resolve(code)
         })
         proc.stdout.on('data', data => {
             let str = data.toString()
-            // console.log('(remote) ' + str)
+            console.log('(remote) ' + str)
             // look for prompt
             onPromptOrResponse(str)
         })
