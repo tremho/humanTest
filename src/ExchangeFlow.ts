@@ -97,6 +97,11 @@ export function startManualTest(title?:string) {
             if(errStr.indexOf('Font') == -1) { // ignore errors about font
                 console.error('(remote err) '+ errStr)
             }
+            // abort otherwise
+            console.error('(remote err) ' + errStr)
+            skipAll = true
+            promptResolver()
+            unattendedMessage = 'Remote executable failed to run'
         })
         remoteStdIn = proc.stdin;
         resetPromptPromise()

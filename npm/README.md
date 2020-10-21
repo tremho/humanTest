@@ -464,7 +464,7 @@ When done with _all_ tests, call `endManualTest()`
 startManualTest('Verify Content')
 ```
 
-Returns **any** void  This does not return a promise like the other commands
+Returns **any** Promise<number>  Return can be ignored; resolves to 0 if remote app launched successfully.If the remote app does not run, subsequent tests are skipped.
 
 #### endManualTest
 
