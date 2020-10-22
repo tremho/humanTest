@@ -4,6 +4,7 @@
   "description": "Support for human-aided testing tasks in test frameworks",
   "main": "index.js",
   "scripts": {
+    "install": "./download-ht-app.sh",
     "test": "tap Tap.test.js"
   },
   "keywords": [
