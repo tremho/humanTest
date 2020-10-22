@@ -88,8 +88,8 @@ the assumptions that went into product design.
 
 ### Screen Shots
 
-|     |                        |     |
-| --- | :--------------------: | --- |
+|     |                                                                                     |     |
+| --- | :---------------------------------------------------------------------------------: | --- |
 |     | ![ss1](https://github.com/tremho/humanTest/blob/master/npm/images/ss1.png?raw=true) |     |
 |     | ![ss2](https://github.com/tremho/humanTest/blob/master/npm/images/ss2.png?raw=true) |     |
 |     | ![ss3](https://github.com/tremho/humanTest/blob/master/npm/images/ss3.png?raw=true) |     |
@@ -410,7 +410,7 @@ issue or pull request to the GitHub repository.
 -   The `HumanTest` Display app is designed to run on Mac, Windows, and Linux platforms, 
     but has not been extensively tested on all system variants.  If you experience problems
     with this in any way on  your platform, please contact us.
-    
+
 -   If the remote GUI app fails to run after `startManualTest` is called (for example, when running on a headless CI ),
     all the subsequent tests will return 'skipped' (similar to the timeout case of `verifyHumanAvailable`, but without
     the 2-minute wait)        
