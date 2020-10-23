@@ -36,9 +36,10 @@ export function startManualTest(title?:string) {
 
     let appDir = `HumanTest-${os.platform()}-${os.arch()}`
 
+    resetPromptPromise()
     let devPrefix = path.join(__dirname,'..','ThunderBolt','electronMain','release-builds')
     // console.log(devPrefix)
-    let releaseDir = (fs.existsSync(devPrefix)) ? devPrefix : 'ht-app'
+    let releaseDir = (fs.existsSync(devPrefix)) ? devPrefix : path.join(__dirname, 'ht-app')
 
     let execPath = os.platform() === 'darwin' ? 'HumanTest.app/Contents/MacOS' : ''
     let execFile = os.platform() === 'win32' ? 'HumanTest.exe' : 'HumanTest'
@@ -52,8 +53,6 @@ export function startManualTest(title?:string) {
         unattendedMessage = 'Remote executable not found'
         return Promise.resolve(-1)
     }
-
-    resetPromptPromise()
 
 
     // console.log('[Harness] launching remote app...', appPath)
