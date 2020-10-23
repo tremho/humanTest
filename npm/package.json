@@ -1,6 +1,6 @@
 {
   "name": "human-test",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Support for human-aided testing tasks in test frameworks",
   "main": "index.js",
   "scripts": {
