@@ -78,7 +78,7 @@ export function startManualTest(title?:string) {
         })
         proc.on('close', () => {
             remoteStdIn = null;
-            console.warn('remote close received')
+            // console.warn('remote close received')
         })
         proc.on('exit', (code, signal) => {
             console.log(`remote has exited, code=${code}, signal=${signal}`)
@@ -90,17 +90,14 @@ export function startManualTest(title?:string) {
         })
         proc.stdout.on('data', data => {
             let str = data.toString()
-            console.log('(remote) ' + str)
+            // console.log('(remote) ' + str)
             // look for prompt
             onPromptOrResponse(str)
         })
-        proc.stderr.on('data', data => {
-            const errStr = data.toString()
-            if(errStr.indexOf('Font') == -1) { // ignore errors about font
-                console.error('(remote err) '+ errStr)
-            }
-            // abort otherwise
-            console.error('(remote err) ' + errStr)
+        proc.stderr.on('data', (/*data*/) => {
+            // const errStr = data.toString()
+
+            // console.error('(remote err) ' + errStr)
             skipAll = true
             promptResolver()
             unattendedMessage = 'Remote executable failed to run'
