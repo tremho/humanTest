@@ -89,8 +89,8 @@
         }
         function syncScroll(panel1, panel2, divider) {
           const onscroll = e => {
-            let st = e.srcElements.scrollTop;
-            let sl = e.srcElements.scrollLeft;
+            let st = e.srcElement.scrollTop;
+            let sl = e.srcElement.scrollLeft;
             if(panel1) {panel1.scrollTop = st; panel1.scrollLeft = sl;}
             if(panel2) {panel2.scrollTop = st; panel2.scrollLeft = sl;}
             if(divider) {divider.scrollLeft = 0;}
