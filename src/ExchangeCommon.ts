@@ -25,6 +25,7 @@ export class TestResponse {
  * | :------- | :---  | :------ | :-----  |
  * | prompt    | string | "Is this acceptable?" | The prompt to display to the user
  * | specialNotice | string | <none> | A message displayed in a modal alert dialog to gove the user special instruction
+ * | title | string | previous | (since v0.3.0) Changes the main title.  The title is initially set with startManualTest, and can be changed with any command. The title will persist beyond the life of the command, until changed again.|
  * | timeout  | number | 30 (120 for verifyHuman) | The number of seconds before a timeout occurs, and test skipped
  * | width | number | <none> | **(`imageView` Only)** Defines the width used for the image display, in pixels. If not provided, the full image width is displayed. |
  * | height | number | <none> | **(`imageView` Only)** Defines the height used for the image display, in pixels. If not provided, the full image height is displayed. |
@@ -34,6 +35,7 @@ export class TestOptions {
     public prompt?: string
     public timeout?: number
     public specialNotice?: string
+    public title?:string;
     public width?:number
     public height?: number
 }
