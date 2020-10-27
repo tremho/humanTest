@@ -169,8 +169,8 @@ function parseCommand(cmdString = '') {
         options.prompt = 'Is this acceptable?'
     }
     if(!options.timeout) {
-        // Default timeout is 2 minutes to verify a human, 30 seconds for each test
-        options.timeout = (passedCommand.cmd === 'verifyHuman') ? 120 : 30
+        // Default timeout is 2 minutes to verify a human, 60 seconds for each test
+        options.timeout = (passedCommand.cmd === 'verifyHuman') ? 120 : 60
     }
     if(options.title) {
         testTitle = options.title;
