@@ -2,6 +2,7 @@
 import { app, BrowserWindow, ipcMain } from 'electron'
 import * as path from 'path'
 import {startCommandLoop} from './src/CommandIO'
+import {WindowStatePersist} from "./src/WindowStatePersist";
 
 // console.log('Launching Electron App\n')
 
@@ -10,29 +11,36 @@ import {startCommandLoop} from './src/CommandIO'
 
 process.env.ELECTRON_DISABLE_SECURITY_WARNINGS = 'YES'
 
+const windowKeeper = new WindowStatePersist('main', 800, 600)
+
 function createWindow (): void {
-    // Create the browser window.
-    const mainWindow:BrowserWindow = new BrowserWindow({
-        width: 800,
-        height: 600,
-        icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
-        webPreferences: {
-            nodeIntegration: false, // we handle all the node stuff back-side
-            contextIsolation: true, // gateway through window.api
-            enableRemoteModule: false,
-            preload: path.join(__dirname, 'preload.js')
-        }
+    windowKeeper.restore().then(() => {
+        // Create the browser window.
+        const mainWindow:BrowserWindow = new BrowserWindow({
+            width: windowKeeper.width,
+            height: windowKeeper.height,
+            x: windowKeeper.x,
+            y: windowKeeper.y,
+            icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
+            webPreferences: {
+                nodeIntegration: false, // we handle all the node stuff back-side
+                contextIsolation: true, // gateway through window.api
+                enableRemoteModule: false,
+                preload: path.join(__dirname, 'preload.js')
+            }
+        })
+
+        console.log(process.argv)
+        windowKeeper.track(mainWindow)
+        startCommandLoop(mainWindow, process.argv[1])
+
+        // and load the index.html of the app.
+        mainWindow.loadFile('../index.html')
+
+        // mainWindow.fullScreen = true;
+        // // Open the DevTools.
+        // mainWindow.webContents.openDevTools()
     })
-
-    console.log(process.argv)
-    startCommandLoop(mainWindow, process.argv[1])
-
-    // and load the index.html of the app.
-    mainWindow.loadFile('../index.html')
-
-    // mainWindow.fullScreen = true;
-    // // Open the DevTools.
-    // mainWindow.webContents.openDevTools()
 }
 
 // This method will be called when Electron has finished
