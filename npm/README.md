@@ -355,6 +355,14 @@ Here is an example test script designed for Jasmine:
 
 ### Handling comments, or unhandled skips
 
+###### Built-in as of v0.3.0
+The below discussion outlines how one might construct one's own test report handling.
+As of v0.3.0, however, this functionality is built-in.
+Simply use `prepareReport(options)` and/or `consoleReport()` (see API docs for details).
+
+The previously published information on how to do this yourself is still valid, and follows: 
+
+###### Creating your own test handling
 When a `TestResponse` object is returned from a `HumanTest` test command,
 any comments the user entered in the GUI app's test area is relayed in the
 `comment` property.  What can practically be done with this information 
