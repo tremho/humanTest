@@ -28,6 +28,11 @@ export class TestOptions {
      * If not defined, no alert is shown.
      */
     public specialNotice?: string
+    /**
+     * Changes the main title.  The title is initially set with startManualTest, and can be changed with any commaond.
+     * The title will persist beyond the life of the command, until changed again.
+     */
+    public title?: string
     /** Defines the width for the image display, in pixels. Used only for the `imageView` command.
      * If not given, a default is used.
      */
