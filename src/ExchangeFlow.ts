@@ -269,7 +269,6 @@ export function compareImages(file1:string, file2:string, options?:TestOptions):
     return manualTest(cmd)
 }
 
-
 /**
 Internal function.
 Manages the exchange with the remote app
