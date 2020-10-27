@@ -299,8 +299,11 @@ export function compareImages(file1:string, file2:string, options?:TestOptions):
 
 /**
  * Outputs a report to a file
- * Note the `reportOptions.file` property must have a path to a file base name (no extension)
- * the `reportOptions.format` should also be set, although it will default to 'text'.
+ *
+ * Note the `reportOptions.file` property must have a path to a file base name (no extension).
+ *
+ * The `reportOptions.format` should also be set, although it will default to 'text'.
+ *
  * @param {ReportOptions} reportOptions -- The options for report output
  * @returns Promise<void> resolves when file has been written (may generally be ignored)
  *
@@ -482,6 +485,7 @@ const banner = "Human Test Report"
 const allSkip = "All Tests Skipped: No Human Available"
 const bannerWidth = 40
 const text = {
+    /** @private */
     header : () => {
         let n = Math.floor((bannerWidth - banner.length)/2 )
         let out = headerColor[0]+'='.repeat(bannerWidth) + resetColor +'\n'
@@ -492,14 +496,17 @@ const text = {
         out += '\n'+ '='.repeat(bannerWidth) +'\n'
         return out
     },
+    /** @private */
     allSkipped: () => {
         return skippedColor+allSkip
     },
+    /** @private */
     testTitle : (name) => {
         let hdr = '    ' + titleColor + `test: ${name}`
         let dc = hdr.length;
         return hdr + '\n    '+'-'.repeat(dc)+'\n'
     },
+    /** @private */
     result : (r, count)=> {
         let out = '    ' + count + '. '
         let disp = r.skipped ? skippedColor+'Skipped' : r.passed ? passedColor+'Passed' : failedColor+'Failed'
@@ -508,9 +515,11 @@ const text = {
         if(comment) out += comment + '\n'
         return out
     },
+    /** @private */
     endTest: () => {
         return '';
     },
+    /** @private */
     footer : () => {
         return footerColor + '\n'+'='.repeat(bannerWidth)+ resetColor + '\n'
     }
