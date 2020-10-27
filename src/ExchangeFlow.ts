@@ -13,7 +13,32 @@ let gatingPromise = Promise.resolve()
 let gateResolver;
 let skipAll = false;
 let unattendedMessage = 'unattended'
+let pendingTestName
+let testingStarted, testingEnded
 
+/**
+ * Types of report formats that may be used
+ */
+enum ReportFormat {
+    text = 'text',
+    html = 'html',
+    markdown = 'markdown'
+}
+
+/**
+ * Options for report output
+ *
+ * | property | type | default | purpose
+ * | -------- | ---- | ------- | -------
+ * | `format` | string | 'text'  | Chooses the format of the report output. Must be one of the `ReportFormat` types
+ * | `headingSize` | string | number | 0 | Integer between 0 (largest) to 3 (smallest) determines size of headings used (html and markdown) .
+ * | `file` | string | undefined | If defined, specifies the *base name* of a file the report will be output to. The extension is provided by the code  according to prefix ('.txt', '.html', or '.md')
+ */
+class ReportOptions {
+    public format?:string = ReportFormat.text[ReportFormat.text]
+    public headingSize?:number = 0
+    public file?:string;
+}
 
 /**
  * Starts manual testing, providing a title.
@@ -33,6 +58,8 @@ let unattendedMessage = 'unattended'
  *
  */
 export function startManualTest(title?:string) {
+
+    testingStarted = Date.now()
 
     let appDir = `HumanTest-${os.platform()}-${os.arch()}`
 
@@ -70,7 +97,7 @@ export function startManualTest(title?:string) {
             resolve(-1)
         })
         proc.on('message', (...args) => {
-            console.warn('remote message recieved', args)
+            console.warn('remote message received', args)
         })
         proc.on('disconnect', () => {
             remoteStdIn = null;
@@ -80,8 +107,8 @@ export function startManualTest(title?:string) {
             remoteStdIn = null;
             // console.warn('remote close received')
         })
-        proc.on('exit', (code, signal) => {
-            console.log(`remote has exited, code=${code}, signal=${signal}`)
+        proc.on('exit', (code, /*signal*/) => {
+            // console.log(`remote has exited, code=${code}, signal=${signal}`)
             skipAll = true
             promptResolver()
             unattendedMessage = 'Remote executable exited prematurely.'
@@ -116,6 +143,7 @@ export function startManualTest(title?:string) {
  * @example endManualTest()
  */
 export function endManualTest() {
+    testingEnded = Date.now()
     skipAll = false;
     const cmd = new Command()
     cmd.cmd = 'exit'
@@ -127,7 +155,7 @@ export function endManualTest() {
  * Timeout default for this command is 60 seconds.  If no response is received in that time,
  * this test response will be with 'skipped = true' and 'error = timeout'.
  * Also in that case, all subsequent tests are automatically skipped, with the comment 'unattended'
- * @param {TestOptions} options The 'timeout' option property is honored here (default = 60)
+ * @param {TestOptions} options The 'timeout' option property is honored here (default = 120)
  *
  * @example
  * verifyHumanAvailable({timeout:60}).then(result => {
@@ -156,7 +184,7 @@ export function verifyHumanAvailable(options?:TestOptions) {
  *
  *
  * @example
- * viewFile('path/to/myfile.txt').then(result => {
+ * viewFile('path/to/myFile.txt').then(result => {
  *   if(result.passed) console.log('looks okay!')
  * })
  */
@@ -270,6 +298,51 @@ export function compareImages(file1:string, file2:string, options?:TestOptions):
 }
 
 /**
+ * Outputs a report to a file
+ * Note the `reportOptions.file` property must have a path to a file base name (no extension)
+ * the `reportOptions.format` should also be set, although it will default to 'text'.
+ * @param {ReportOptions} reportOptions -- The options for report output
+ * @returns Promise<void> resolves when file has been written (may generally be ignored)
+ *
+ * @since v0.3.0
+ *
+ * @example
+ *      produceReport({format:html, file:'testReport'}
+ */
+export function produceReport(reportOptions:ReportOptions) {
+    let p = Promise.resolve()
+    if(reportOptions.file) {
+        hSize = reportOptions.headingSize
+        // send to file if so declared
+        p = getReport(ReportFormat[reportOptions.format || 'text'], false).then(rpt => {
+            let filename = reportOptions.file + extMap[reportOptions.format || 'text']
+            fs.writeFileSync(filename, rpt)
+            console.log(`HumanTest report written to ${filename}`)
+            return;
+        })
+    }
+    return p; // return the promise
+}
+
+/**
+ * Retrieves a text format report suitable for output to the console
+ *
+ * @param {boolean} inColor - if true, the report text will contain ANSII color escape codes.
+ *
+ * @returns Promise<string> resolves with the text of the report when ready.
+ *
+ * @since v0.3.0
+ *
+ * @example
+ *      consoleReport(true).then(rpt => {
+ *          console.log(rpt)
+ *      }
+ */
+export function consoleReport(inColor:boolean) {
+    return getReport('text', inColor)
+}
+
+/**
 Internal function.
 Manages the exchange with the remote app
  @private
@@ -280,6 +353,7 @@ function manualTest(command:Command):Promise<TestResponse> {
         const skipResponse = new TestResponse()
         skipResponse.skipped = true;
         skipResponse.comment = unattendedMessage;
+        record(pendingTestName, skipResponse)
         return Promise.resolve(skipResponse)
     }
     // console.log('manual test - gating')
@@ -291,6 +365,7 @@ function manualTest(command:Command):Promise<TestResponse> {
         return promptPromise.then(() => {
             if(skipAll) return Promise.resolve(new TestResponse())
             resetPromptPromise();
+            pendingTestName = (command.options && command.options.name) || command.cmd //+commandCount(command.cmd)
             writeCommand(command)
             return watchForResponse()
         })
@@ -317,11 +392,12 @@ function onPromptOrResponse(str) {
         const prefix = '[Response]: '
         if(str.substring(0, prefix.length) === prefix) {
             if(responseResolver) {
-                const trstr = str.substring(prefix.length)
-                // console.log('[HARNESS] response received: ', trstr)
+                const trStr = str.substring(prefix.length)
+                // console.log('[HARNESS] response received: ', trStr)
                 // turn into a TestResponse object
-                const trdata = JSON.parse(trstr)
-                responseResolver(trdata)
+                const trData = JSON.parse(trStr)
+                record(pendingTestName, trData)
+                responseResolver(trData)
                 gateResolver();
             } else {
                 console.error('[HARNESS] No responseResolver')
@@ -350,3 +426,192 @@ function writeCommand(command) {
     }
 }
 
+// --------------- Human Test Reporting support ---------------
+
+const htReportMap = {}
+
+function record(name:string, results:any) {
+    const ra = htReportMap[name] || []
+    ra.push(results)
+    htReportMap[name] = ra
+}
+
+const extMap = {
+    text: '.txt',
+    html: '.html',
+    markdown: '.md'
+}
+
+let headerColor, titleColor, passedColor,failedColor,skippedColor, commentColor, footerColor, resetColor;
+let startedLine, elapsedLine
+
+let hSize; // set at prepare from options
+
+function setup(inColor) {
+    headerColor = [
+        inColor ? '\u001b[33m\u001b[43m' : '',
+        inColor ? '\u001b[30m\u001b[43m' : '',
+    ]
+    titleColor = inColor ? '\u001b[30m' : ''
+
+    passedColor = inColor ? '\u001b[32m' : ''
+    failedColor =  inColor ? '\u001b[31m' : ''
+    skippedColor = inColor ? '\u001b[36m' : ''
+
+    commentColor = inColor ? '\u001b[34m' : ''
+    footerColor = inColor ? '\u001b[30m' : ''
+    resetColor = inColor ? '\u001b[m' : ''
+
+    let start = new Date(testingStarted)
+    let stLn = ' tested at '+start.toLocaleString()
+    startedLine = stLn + ' '.repeat(bannerWidth - stLn.length) + resetColor
+    let elapsed = testingEnded - testingStarted;
+    let secs:string | number = Math.floor(elapsed / 1000);
+    let mins:string | number = Math.floor(secs/60)
+    let hrs = Math.floor(mins/60)
+    mins = mins - (hrs * 60);
+    secs = secs - (hrs * 3600 + mins * 60);
+    if(mins < 10) mins = '0'+mins;
+    if(secs < 10) secs = '0'+secs;
+    let et = hrs ? `${hrs}:${mins}:${secs}`: mins !== '00' ? `${mins}:${secs}` : `${secs} seconds`
+    let eLine = ' test time '+et
+    elapsedLine = eLine + ' '.repeat(bannerWidth - eLine.length)
+}
+
+const banner = "Human Test Report"
+const allSkip = "All Tests Skipped: No Human Available"
+const bannerWidth = 40
+const text = {
+    header : () => {
+        let n = Math.floor((bannerWidth - banner.length)/2 )
+        let out = headerColor[0]+'='.repeat(bannerWidth) + resetColor +'\n'
+        out += headerColor[1]+' '.repeat(n) + banner + ' '.repeat(bannerWidth - (banner.length+n)) + resetColor + '\n'
+        out += headerColor[0]+'='.repeat(bannerWidth)+ resetColor + '\n'
+        out += headerColor[1]+ startedLine + resetColor + '\n'
+        out += headerColor[1]+ elapsedLine + resetColor + '\n'
+        out += '\n'+ '='.repeat(bannerWidth) +'\n'
+        return out
+    },
+    allSkipped: () => {
+        return skippedColor+allSkip
+    },
+    testTitle : (name) => {
+        let hdr = '    ' + titleColor + `test: ${name}`
+        let dc = hdr.length;
+        return hdr + '\n    '+'-'.repeat(dc)+'\n'
+    },
+    result : (r, count)=> {
+        let out = '    ' + count + '. '
+        let disp = r.skipped ? skippedColor+'Skipped' : r.passed ? passedColor+'Passed' : failedColor+'Failed'
+        let comment = commentColor +r.comment
+        out += disp + '\n    '
+        if(comment) out += comment + '\n'
+        return out
+    },
+    endTest: () => {
+        return '';
+    },
+    footer : () => {
+        return footerColor + '\n'+'='.repeat(bannerWidth)+ resetColor + '\n'
+    }
+}
+/** @private */
+function hv(r) {
+    return Math.min(r+(hSize||0), 6)
+}
+const html = {
+    /** @private */
+    header: () => {
+        let out = '<div class = "ht_header">'
+        out += `<h${hv(1)}>${banner}</h${hv(1)}>\n`
+        out += '<em>'+startedLine.trim()+'</em><br/>\n'
+        out += '<em>'+elapsedLine.trim()+'</em><br/>\n'
+        out += '<hr/>\n'
+        out += '</div>\n'
+        return out
+    },
+    /** @private */
+    footer: () => {
+        return `<hr class="ht_footer"/>`
+    },
+    /** @private */
+    allSkipped: () => {
+        return `<p class="ht_skipped">${allSkip}</p>`
+    },
+    /** @private */
+    testTitle: (name) => {
+        return `<div class="ht_test">\n<h${hv(3)}>test: ${name}</h${hv(3)}>\n<ol>\n`
+    },
+    /** @private */
+    result: (r) => {
+        let disp = r.skipped ? 'skipped' : r.passed ? 'passed' : 'failed'
+        return `<li class="${disp}">${disp}<br/>\n    <span class="comment">${r.comment}</span></li>\n`
+    },
+    /** @private */
+    endTest: ()=> {
+        return '</ol>\n</div>\n\n'
+    }
+}
+const markdown = {
+    /** @private */
+    header: () => {
+        let hash = '#'.repeat(hv(1))
+        let out = `${hash} ${banner}\n\n`
+        out += '- '+startedLine.trim()+'\n'
+        out += '- '+elapsedLine.trim()+'\n\n'
+        return out
+
+    },
+    /** @private */
+    footer: () => {
+        return '\n----\n'
+    },
+    /** @private */
+    allSkipped: () => {
+        return `###### _${allSkip}_\n`
+
+    },
+    /** @private */
+    testTitle: (name) => {
+        let hash = '#'.repeat(hv(3))
+        return `${hash} test: ${name}\n`
+    },
+    /** @private */
+    endTest: () => {
+        return '\n';
+    },
+
+    /** @private */
+    result: (r, count) => {
+        let disp = r.skipped ? '_`skipped`_' : r.passed ? '`passed`' : '__`failed`__'
+        return `${count}. ${disp}${r.comment ? ' - '+ '_'+r.comment+'_' : ''}`+'\n'
+    }
+}
+
+
+const formatRender = {
+    text, html, markdown
+}
+
+function getReport(format:string = "text", inColor) {
+    setup(inColor)
+    let render = formatRender[format]
+    let rpt = render.header()
+    Object.getOwnPropertyNames(htReportMap).forEach(name => {
+        if(name !== 'verifyHuman') {
+            const ra = htReportMap[name] || []
+            rpt += render.testTitle(name)
+            let count = 1;
+            ra.forEach(r => {
+                rpt += render.result(r, count++)
+            })
+            rpt += render.endTest()
+        } else {
+            if(htReportMap[name][0].skipped) {
+                rpt += render.allSkipped()
+            }
+        }
+    })
+    rpt += render.footer()
+    return Promise.resolve(rpt)
+}
