@@ -34,7 +34,9 @@ export function getTestTitle() {
  */
 export function getPassedCommand():Command {
     // console.log('[App] command sent to GUI: ', passedCommand)
-    startTimer((passedCommand.cmd === 'verifyHuman') ? unavailable : timeout, passedCommand.options.timeout)
+    if(passedCommand) {
+        startTimer((passedCommand.cmd === 'verifyHuman') ? unavailable : timeout, passedCommand.options.timeout)
+    }
     return passedCommand
 }
 
@@ -112,6 +114,7 @@ export function handleResponse(response:TestResponse) {
  * Called from main at startup.
  *
  * @param {BrowserWindow} window Our main window.
+ * @param {string} title title passed from startManualTest
  */
 export function startCommandLoop(window:BrowserWindow, title:string):void {
     mainWindow = window
@@ -161,13 +164,16 @@ function parseCommand(cmdString = '') {
             passedCommand.cmdargs[i].text = readFile(passedCommand.cmdargs[i].file) || passedCommand.cmdargs[i].file // treat as a file if it exists, otherwise, as text
         }
     }
-    const options = passedCommand.options || {}
+    const options:TestOptions = passedCommand.options || {}
     if(!options.prompt) {
         options.prompt = 'Is this acceptable?'
     }
     if(!options.timeout) {
         // Default timeout is 2 minutes to verify a human, 30 seconds for each test
         options.timeout = (passedCommand.cmd === 'verifyHuman') ? 120 : 30
+    }
+    if(options.title) {
+        testTitle = options.title;
     }
     passedCommand.options = options
 }
