@@ -1,6 +1,6 @@
 
 file=ht-app.tgz
-url=https://github.com/tremho/humanTest/releases/download/v0.2.4/ht-app.tgz
+url=https://github.com/tremho/humanTest/releases/download/v0.3.0/ht-app.tgz
 
 pwd=`pwd`
 which wget >/dev/null
