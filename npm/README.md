@@ -355,6 +355,16 @@ Here is an example test script designed for Jasmine:
 
 ### Handling comments, or unhandled skips
 
+###### Built-in as of v0.3.0
+
+The below discussion outlines how one might construct one's own test report handling.
+As of v0.3.0, however, this functionality is built-in.
+Simply use `prepareReport(options)` and/or `consoleReport()` (see API docs for details).
+
+The previously published information on how to do this yourself is still valid, and follows: 
+
+###### Creating your own test handling
+
 When a `TestResponse` object is returned from a `HumanTest` test command,
 any comments the user entered in the GUI app's test area is relayed in the
 `comment` property.  What can practically be done with this information 
@@ -430,6 +440,8 @@ human-enacted tests can easily exceed these limits.
 
 ##### Table of Contents
 
+-   [ReportFormat](#reportformat)
+-   [ReportOptions](#reportoptions)
 -   [startManualTest](#startmanualtest)
     -   [Parameters](#parameters)
     -   [Examples](#examples)
@@ -453,8 +465,28 @@ human-enacted tests can easily exceed these limits.
 -   [compareImages](#compareimages)
     -   [Parameters](#parameters-6)
     -   [Examples](#examples-7)
+-   [produceReport](#producereport)
+    -   [Parameters](#parameters-7)
+    -   [Examples](#examples-8)
+-   [consoleReport](#consolereport)
+    -   [Parameters](#parameters-8)
+    -   [Examples](#examples-9)
 -   [TestResponse](#testresponse)
 -   [TestOptions](#testoptions)
+
+#### ReportFormat
+
+Types of report formats that may be used
+
+#### ReportOptions
+
+Options for report output
+
+| property      | type   | default   | purpose                                                                                                                                                              |                                                                                                    |
+| ------------- | ------ | --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `format`      | string | 'text'    | Chooses the format of the report output. Must be one of the `ReportFormat` types                                                                                     |                                                                                                    |
+| `headingSize` | string | number    | 0                                                                                                                                                                    | Integer between 0 (largest) to 3 (smallest) determines size of headings used (html and markdown) . |
+| `file`        | string | undefined | If defined, specifies the _base name_ of a file the report will be output to. The extension is provided by the code  according to prefix ('.txt', '.html', or '.md') |                                                                                                    |
 
 #### startManualTest
 
@@ -498,7 +530,7 @@ Also in that case, all subsequent tests are automatically skipped, with the comm
 
 ##### Parameters
 
--   `options` **[TestOptions](#testoptions)** The 'timeout' option property is honored here (default = 60)
+-   `options` **[TestOptions](#testoptions)** The 'timeout' option property is honored here (default = 120)
 
 ##### Examples
 
@@ -520,7 +552,7 @@ Displays the contents of a text file and prompts the user for pass/fail/skip or 
 ##### Examples
 
 ```javascript
-viewFile('path/to/myfile.txt').then(result => {
+viewFile('path/to/myFile.txt').then(result => {
   if(result.passed) console.log('looks okay!')
 })
 ```
@@ -624,6 +656,52 @@ the test.  That is useful for `compareImages`, since it provides two view modes 
 })`
 ```
 
+#### produceReport
+
+Outputs a report to a file
+
+Note the `reportOptions.file` property must have a path to a file base name (no extension).
+
+The `reportOptions.format` should also be set, although it will default to 'text'.
+
+##### Parameters
+
+-   `reportOptions` **[ReportOptions](#reportoptions)** \-- The options for report output
+
+##### Examples
+
+```javascript
+produceReport({format:html, file:'testReport'}
+```
+
+Returns **any** Promise<void> resolves when file has been written (may generally be ignored)
+
+**Meta**
+
+-   **since**: v0.3.0
+
+#### consoleReport
+
+Retrieves a text format report suitable for output to the console
+
+##### Parameters
+
+-   `inColor` **[boolean](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Boolean)** if true, the report text will contain ANSII color escape codes.
+
+##### Examples
+
+```javascript
+consoleReport(true).then(rpt => {
+         console.log(rpt)
+     }
+```
+
+Returns **any** Promise<string> resolves with the text of the report when ready.
+
+**Meta**
+
+-   **since**: v0.3.0
+
 #### TestResponse
 
 Object structure returned by a test.
@@ -641,13 +719,17 @@ Tests return a Promise that resolves with an object with the following propertie
 Options that _may_ be passed to each command.
 If not given, defaults for each value are used.
 
-| Property      | Type   | Default                  | Purpose                                                                                                                               |
-| :------------ | :----- | :----------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
-| prompt        | string | "Is this acceptable?"    | The prompt to display to the user                                                                                                     |
-| specialNotice | string | <none>                   | A message displayed in a modal alert dialog to gove the user special instruction                                                      |
-| timeout       | number | 30 (120 for verifyHuman) | The number of seconds before a timeout occurs, and test skipped                                                                       |
-| width         | number | <none>                   | **(`imageView` Only)** Defines the width used for the image display, in pixels. If not provided, the full image width is displayed.   |
-| height        | number | <none>                   | **(`imageView` Only)** Defines the height used for the image display, in pixels. If not provided, the full image height is displayed. |
+_Note: in v0.3.0 the default test timeout was changed from 30 to 60_
+
+| Property      | Type   | Default                  | Purpose                                                                                                                                                                                                   |
+| :------------ | :----- | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| prompt        | string | "Is this acceptable?"    | The prompt to display to the user                                                                                                                                                                         |
+| specialNotice | string | <none>                   | A message displayed in a modal alert dialog to gove the user special instruction                                                                                                                          |
+| title         | string | previous                 | (since v0.3.0) Changes the main title.  The title is initially set with startManualTest, and can be changed with any command. The title will persist beyond the life of the command, until changed again. |
+| name          | string | derived from command     | (since v0.3.0) assigns the test naem that the results appear under in the HumanTest Report output                                                                                                         |
+| timeout       | number | 60 (120 for verifyHuman) | The number of seconds before a timeout occurs, and test skipped                                                                                                                                           |
+| width         | number | <none>                   | **(`imageView` Only)** Defines the width used for the image display, in pixels. If not provided, the full image width is displayed.                                                                       |
+| height        | number | <none>                   | **(`imageView` Only)** Defines the height used for the image display, in pixels. If not provided, the full image height is displayed.                                                                     |
 
 ### Known issues
 

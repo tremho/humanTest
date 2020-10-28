@@ -7,7 +7,9 @@ import {
     diff,
     viewImage,
     compareImages,
-    verifyHumanAvailable
+    verifyHumanAvailable,
+    produceReport,
+    consoleReport
 } from './ExchangeFlow'
 import * as path from 'path'
 
@@ -29,18 +31,22 @@ verifyHumanAvailable().then(tr => {
 
     console.log('verifyHuman Response', tr)
 
-    viewFile(path.join(root,'README.md'), {prompt: 'Does the Readme make sense?'}).then(tr => {
+    viewFile(path.join(root, 'README.md'), {prompt: 'Does the Readme make sense?'}).then(tr => {
         console.log('response ', tr)
 
         // todo: Bug with showText and literal new line.
         showText("This is some text to be shown. It was entered literally",
-            {prompt: 'Custom Prompt', specialNotice:'Listen up! This is a special notice.'}).then(tr => {
+            {prompt: 'Custom Prompt',
+                    specialNotice: 'Listen up! This is a special notice.',
+                    title: 'Title set by option',
+                    name: 'My Test Name'
+            }).then(tr => {
             console.log('response ', tr)
 
-            diff(path.join(root, 'example','textFile.txt'), path.join(root, 'example','diffText.txt')).then(tr => {
+            diff(path.join(root, 'example', 'textFile.txt'), path.join(root, 'example', 'diffText.txt')).then(tr => {
                 console.log('response ', tr)
 
-                viewImage(path.join(root, 'example', 'dog.jpg'), {width:250, height:250}).then(tr => {
+                viewImage(path.join(root, 'example', 'dog.jpg'), {name: 'My Test Name', width: 250, height: 250}).then(tr => {
                     console.log('response ', tr)
 
                     compareImages(path.join(root, 'example', 'dog.jpg'), path.join(root, 'example', 'cat.jpg')).then(tr => {
@@ -48,6 +54,12 @@ verifyHumanAvailable().then(tr => {
 
                         console.log("[Harness] Test Completed")
                         endManualTest()
+                        produceReport({format: 'html', file:'humanTest', headingSize:3})
+                        produceReport({format: 'markdown', file:'humanTest',  headingSize:3})
+                        produceReport({format: 'text', file:'humanTest',  headingSize:3})
+                        consoleReport(true).then(rpt => {
+                            console.log(rpt)
+                        })
                     })
                 })
             })

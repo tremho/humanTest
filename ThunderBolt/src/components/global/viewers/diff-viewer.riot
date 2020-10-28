@@ -2,10 +2,19 @@
 <diff-viewer>
     <div class="scroller">
         <flex-layout orientation="horizontal" justify="space-around">
-            <ol class="panel"/>
-            <ul class="divider"/>
-            <ol class="panel"/>
+            <ol class="panel" if="{!state.rightOnly}"/>
+            <ul class="divider" if="{ state.both}" />
+            <ol class="panel" if="{!state.leftOnly}"/>
         </flex-layout>
+        <fill-space height="12px"/>
+        <button onclick="{toggle}" if="{state.isDiff}">Highlights Off</button>
+        <button onclick="{toggle}" if="{!state.isDiff}">Highlights On</button>
+        <fill-space width="40px" />
+        <button onclick="{leftonly}">Left side only</button>
+        <fill-space width="25px" />
+        <button onclick="{rightonly}">Right side only</button>
+        <fill-space width="25px" />
+        <button onclick="{both}">Both</button>
     </div>
     <style>
         .scroller {
@@ -15,7 +24,7 @@
         }
         .divider {
             width: 20px;
-            padding: 0px;
+            padding: 0;
             white-space: nowrap;
             overflow-x: scroll;
         }
@@ -43,8 +52,6 @@
           const rlines = right.split('\n')
           // alignTextLines(llines, rlines)
           let i = 0;
-          let before = ''
-          let after = ''
           while(i < llines.length || i < rlines.length) {
             let port = llines[i] || ''
             port.trim();
@@ -82,11 +89,15 @@
         }
         function syncScroll(panel1, panel2, divider) {
           const onscroll = e => {
-            panel1.scrollTop = panel2.scrollTop = divider.scrollTop = e.srcElement.scrollTop
-            panel1.scrollLeft = panel2.scrollLeft = e.srcElement.scrollLeft;
-            divider.scrollLeft = 0;
+            let st = e.srcElement.scrollTop;
+            let sl = e.srcElement.scrollLeft;
+            if(panel1) {panel1.scrollTop = st; panel1.scrollLeft = sl;}
+            if(panel2) {panel2.scrollTop = st; panel2.scrollLeft = sl;}
+            if(divider) {divider.scrollLeft = 0;}
           }
-          panel1.onscroll = panel2.onscroll = divider.onscroll = onscroll;
+          if(panel1) panel1.onscroll = onscroll;
+          if(panel2) panel2.onscroll = onscroll;
+          if(divider) divider.onscroll = onscroll;
         }
 
         function insdel(text) {
@@ -95,30 +106,87 @@
           return text;
         }
         export default {
-          state: {},
+          state: {
+            isDiff: true,
+            leftOnly: false,
+            rightOnly: false,
+            both: true
+          },
           bound: {},
-          onBeforeMount(props, state) {
+          onBeforeMount(/*props, state*/) {
             cm = newCommon(this)
           },    
           onMounted(props, state) {
             console.log(this.root.tagName, 'onMounted', props, state)
             cm.bindComponent()
-            // must do when mounted to get the panel references
+          },
+          onBeforeUpdate(props, state) {
+            // must do when mounted to get the panel references and on before update to handle toggle differences
             const passedCmd = cm.getApp().model.getAtPath('passedCmd');
             const leftSide = (passedCmd && passedCmd.cmdargs && passedCmd.cmdargs[0] && passedCmd.cmdargs[0].text) || ''
             const rightSide = (passedCmd && passedCmd.cmdargs && passedCmd.cmdargs[1] && passedCmd.cmdargs[1].text) || ''
             const panels = this.$$('.panel')
+            const leftPanel = state.rightOnly ? null : panels[0]
+            const rightPanel = state.leftOnly ? null : panels[1] || panels[0]
             const divider = this.$('.divider')
-            diffDetail(leftSide, rightSide, panels[0], panels[1], divider)
-            syncScroll(panels[0], panels[1], divider)
-          },
-          onBeforeUpdate(props, state) {              
+            if(leftPanel) leftPanel.innerHTML = '';
+            if(rightPanel) rightPanel.innerHTML = '';
+            if(divider) divider.innerHTML = ''
+            if(state.leftOnly) {
+              leftPanel.style.width = '100%'
+            }
+            if(state.rightOnly) {
+              rightPanel.style.width = '100%'
+            }
+            if(state.both) {
+              leftPanel.style.width = rightPanel.style.width = ''; // reset to class setting.
+            }
+
+            if(state.isDiff) {
+              diffDetail(leftSide, rightSide, leftPanel, rightPanel, divider)
+            } else {
+              if(leftPanel) leftPanel.innerText = leftSide;
+              if(rightPanel) rightPanel.innerText = rightSide;
+            }
+            syncScroll(leftPanel, rightPanel, divider)
           },
           onUpdated(props, state) {              
           },
           onBeforeUnmount(props, state) {              
           },
           onUnmounted(props, state) {              
+          },
+          toggle(e) {
+            const comp = cm.getComponent(e.srcElement);
+            comp.state.isDiff = !comp.state.isDiff;
+            if(comp.state.isDiff) {
+              comp.state.leftOnly = comp.state.rightOnly = false;
+              comp.state.both = true;
+            }
+            comp.update()
+          },
+          leftonly(e) {
+            const comp = cm.getComponent(e.srcElement);
+            comp.state.leftOnly = true;
+            comp.state.rightOnly = false;
+            comp.state.both = false;
+            comp.state.isDiff = false;
+            comp.update()
+          },
+          rightonly(e) {
+            const comp = cm.getComponent(e.srcElement);
+            comp.state.leftOnly = false;
+            comp.state.rightOnly = true;
+            comp.state.both = false;
+            comp.state.isDiff = false;
+            comp.update()
+          },
+          both(e) {
+            const comp = cm.getComponent(e.srcElement);
+            comp.state.leftOnly = false;
+            comp.state.rightOnly = false;
+            comp.state.both = true;
+            comp.update()
           }
         }   
     </script>

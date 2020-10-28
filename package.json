@@ -12,7 +12,10 @@
     "dev-build": "here=`pwd`; npm run build && cd ThunderBolt/electronMain; npm run package && cd $here; inchjs",
     "gen-npm": "npm run dev-build && tsccd ./build && npm run x-gen-npm",
     "x-gen-npm": "cd npm && rm -fr example ht-app index.js ExchangeCommon.js ExchangeFlow.js.map ExchangeCommon.js.map; ln -s ../ThunderBolt/electronMain/release-builds ht-app && ln -s ../build/ExchangeFlow.js index.js && ln -s ../build/ExchangeCommon.js ExchangeCommon.js && ln -s ../build/ExchangeFlow.js.map && ln -s ../build/ExchangeCommon.js.map && ln -s ../example example && documentation readme index.js --section=API",
-    "publish": "npm run gen-npm && rm -fr publish-temp; mkdir publish-temp; cd publish-temp; cp -r ../npm .; cd npm && rm -fr ./ht-app &&  npm publish . && echo \"Don't forget to release a new ht-app.tgz on GitHub\""
+    "pre-publish": "here=`pwd`; npm run gen-npm && rm -fr publish-temp; mkdir publish-temp; cd publish-temp; cp -r ../npm .; cd npm && rm -fr ./ht-app && cd $here; npm run make-tgz",
+    "make-tgz": "cd publish-temp; rm -fr ht.app ht.app.tgz;  cp -r ../npm/ht-app . && tar czvf ht-app.tgz ht-app && echo \"Don't forget to release a new ht-app.tgz on GitHub and change downloader url\"",
+    "publish": "echo \"If you haven't run pre-publish. stop this now\"; sleep 2; npm publish publish-temp/npm"
+
   },
   "keywords": [
     "Manual",
