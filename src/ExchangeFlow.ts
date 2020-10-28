@@ -398,7 +398,14 @@ function onPromptOrResponse(str) {
                 const trStr = str.substring(prefix.length)
                 // console.log('[HARNESS] response received: ', trStr)
                 // turn into a TestResponse object
-                const trData = JSON.parse(trStr)
+                let trData;
+                try {
+                    trData = JSON.parse(trStr)
+                } catch(e) {
+                    trData = new TestResponse();
+                    trData.skipped = true;
+                    trData.comment = 'Response parse Error: '+e.message;
+                }
                 record(pendingTestName, trData)
                 responseResolver(trData)
                 gateResolver();
